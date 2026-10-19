@@ -240,7 +240,7 @@ export function getHangingSignTexture(title: string, number: string, accent: str
     ctx.fillRect(0, 236, 2048, 20);
     ctx.fillRect(0, 20, 220, 216);
     ctx.fillStyle = '#ffffff';
-    ctx.font = '800 120px Inter, Arial, sans-serif';
+    ctx.font = `800 ${number.length > 2 ? 62 : 120}px Inter, Arial, sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(number, 110, 132);
@@ -340,34 +340,37 @@ export function getMarbleTexture(): CanvasTexture {
   return tex;
 }
 
-/** Ardoise du menu du café. */
+/** Ardoise du café : simulateur FDV → prix théorique par point $VAR au TGE. */
 export function getMenuTexture(): CanvasTexture {
-  return makeTexture('menu', 1024, 640, (ctx) => {
+  return makeTexture('menu-fdv', 1024, 700, (ctx) => {
     ctx.fillStyle = '#1f2326';
-    ctx.fillRect(0, 0, 1024, 640);
+    ctx.fillRect(0, 0, 1024, 700);
     ctx.strokeStyle = '#b08d57';
     ctx.lineWidth = 10;
-    ctx.strokeRect(5, 5, 1014, 630);
-    drawLogo(ctx, 60, 50, 54, { emblem: BRAND_BLUE, text: '#ffffff' });
+    ctx.strokeRect(5, 5, 1014, 690);
+    drawLogo(ctx, 60, 44, 48, { emblem: BRAND_BLUE, text: '#ffffff' });
     ctx.fillStyle = '#f5e6c8';
-    ctx.font = '800 54px Inter, Arial, sans-serif';
+    ctx.font = '800 40px Inter, Arial, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText('CAFÉ', 964, 96);
+    ctx.fillText('$VAR · TGE MENU', 964, 84);
     ctx.textAlign = 'left';
-    const items: [string, string][] = [
-      ['Espresso', '0% fees'],
-      ['Cappuccino', '0% fees'],
-      ['Flat white', '0% fees'],
-      ['Matcha latte', '0% fees'],
-      ['RFQ cold brew', 'firm price'],
-      ['Croissant · cookie', 'free'],
+    ctx.fillStyle = '#9fb6d6';
+    ctx.font = '600 26px Inter, Arial, sans-serif';
+    ctx.fillText('FDV  →  price per point', 70, 150);
+    const rows: [string, string][] = [
+      ['FDV $1B', '$28.6 / point'],
+      ['FDV $2B', '$57.1 / point'],
+      ['FDV $3B', '$85.7 / point'],
+      ['FDV $5B', '$142.9 / point'],
+      ['FDV $8B', '$228.6 / point'],
+      ['FDV $30B', '$857.0 / point'],
     ];
-    items.forEach(([name, price], i) => {
-      const y = 200 + i * 70;
+    rows.forEach(([name, price], i) => {
+      const y = 220 + i * 70;
       ctx.fillStyle = '#ffffff';
-      ctx.font = '600 40px Inter, Arial, sans-serif';
+      ctx.font = '700 40px Inter, Arial, sans-serif';
       ctx.fillText(name, 70, y);
-      ctx.fillStyle = '#9cc8fb';
+      ctx.fillStyle = '#c4b5fd';
       ctx.textAlign = 'right';
       ctx.fillText(price, 954, y);
       ctx.textAlign = 'left';
@@ -375,11 +378,14 @@ export function getMenuTexture(): CanvasTexture {
       ctx.lineWidth = 2;
       ctx.setLineDash([4, 10]);
       ctx.beginPath();
-      ctx.moveTo(70 + ctx.measureText(name).width + 20, y - 12);
-      ctx.lineTo(954 - 220, y - 12);
+      ctx.moveTo(70 + ctx.measureText(name).width + 24, y - 12);
+      ctx.lineTo(954 - ctx.measureText(price).width - 24, y - 12);
       ctx.stroke();
       ctx.setLineDash([]);
     });
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '500 22px Inter, Arial, sans-serif';
+    ctx.fillText('32% Genesis airdrop · theoretical simulation · not financial advice', 70, 655);
   });
 }
 

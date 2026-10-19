@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import {
   ArrowRight,
   AtSign,
@@ -12,8 +12,6 @@ import {
   Square,
   TriangleAlert,
   UserRound,
-  X,
-  ZoomIn,
 } from 'lucide-react';
 import {
   formatTime,
@@ -27,11 +25,11 @@ import {
 import { t } from '@/lib/i18n';
 import { accessUrl, CEO_URL, REFERRAL_CODE, VARIATIONAL_X } from '@/lib/links';
 import { useWorld } from '@/lib/store';
-import type { Figure, Highlight } from '@/lib/visuals';
+import type { Highlight } from '@/lib/visuals';
 
 export function Section({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
-    <section className="mt-6 first:mt-1">
+    <section className="mt-8 first:mt-2">
       <h3 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-slate-500">
         {icon}
         {title}
@@ -44,7 +42,7 @@ export function Section({ icon, title, children }: { icon: React.ReactNode; titl
 /** Bandeau de chiffres clés en tête de l'onglet « Essentiel ». */
 export function Highlights({ items, accent, lang }: { items: Highlight[]; accent: string; lang: Lang }) {
   return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+    <div className={`grid grid-cols-1 gap-3 sm:grid-cols-2 ${items.length > 3 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'}`}>
       {items.map((h) => (
         <div
           key={h.value + h.label.en}
@@ -69,14 +67,14 @@ export function StepCards({ items, accent }: { items: string[]; accent: string }
   return (
     <ol className="grid gap-3 md:grid-cols-2">
       {items.map((p, i) => (
-        <li key={p} className="flex gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+        <li key={p} className="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <span
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
             style={{ backgroundColor: accent }}
           >
             {i + 1}
           </span>
-          <p className="text-[15px] leading-relaxed text-slate-700">{p}</p>
+          <p className="text-[15px] leading-7 text-slate-700">{p}</p>
         </li>
       ))}
     </ol>
@@ -173,79 +171,6 @@ export function CompareTable({ table, lang }: { table: ComparisonTable; lang: La
         <ExternalLink className="h-3 w-3" aria-hidden />
       </a>
     </>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Figures réelles + visionneuse                                        */
-/* ------------------------------------------------------------------ */
-
-export function FigureCard({ figure, lang, onOpen, large = false }: { figure: Figure; lang: Lang; onOpen: () => void; large?: boolean }) {
-  return (
-    <figure className="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <button type="button" onClick={onOpen} className="relative block w-full bg-slate-50" aria-label={`${t('enlarge', lang)} : ${figure.caption[lang]}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={figure.src}
-          alt={figure.caption[lang]}
-          decoding="async"
-          className={`w-full object-contain ${large ? 'max-h-80' : 'h-44'} transition group-hover:scale-[1.01]`}
-        />
-        <span className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-[11px] font-semibold text-slate-700 opacity-0 shadow transition group-hover:opacity-100">
-          <ZoomIn className="h-3.5 w-3.5" aria-hidden />
-          {t('enlarge', lang)}
-        </span>
-      </button>
-      <figcaption className="border-t border-slate-100 px-3 py-2">
-        <p className="text-sm font-semibold text-slate-800">{figure.caption[lang]}</p>
-        <p className="text-xs text-slate-500">{figure.credit}</p>
-      </figcaption>
-    </figure>
-  );
-}
-
-export function Lightbox({ figure, lang, onClose }: { figure: Figure | null; lang: Lang; onClose: () => void }) {
-  useEffect(() => {
-    if (!figure) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        // Ferme la visionneuse sans fermer le pop-up.
-        e.stopImmediatePropagation();
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', onKey, true);
-    return () => window.removeEventListener('keydown', onKey, true);
-  }, [figure, onClose]);
-
-  if (!figure) return null;
-  return (
-    <div
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/80 p-4"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      role="dialog"
-      aria-modal="true"
-      aria-label={figure.caption[lang]}
-    >
-      <div className="relative max-h-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label={t('close', lang)}
-          className="absolute right-2 top-2 rounded-full bg-white/90 p-1.5 text-slate-600 shadow hover:text-slate-900"
-        >
-          <X className="h-5 w-5" />
-        </button>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={figure.src} alt={figure.caption[lang]} className="max-h-[78vh] w-auto object-contain" />
-        <div className="border-t border-slate-100 px-4 py-2.5">
-          <p className="text-sm font-semibold text-slate-800">{figure.caption[lang]}</p>
-          <p className="text-xs text-slate-500">{figure.credit}</p>
-        </div>
-      </div>
-    </div>
   );
 }
 

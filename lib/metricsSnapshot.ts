@@ -7,83 +7,169 @@
 import type { MetricsData } from './metrics';
 
 export const METRICS_SNAPSHOT: MetricsData = {
-  "fetchedAt": "2026-10-19T21:59:10Z",
-  "volume24h": 3045328835,
-  "cumulativeVolume": 423651060224,
-  "tvl": 240465676,
-  "openInterest": 1950991455,
+  "fetchedAt": "2026-10-19T23:25:16Z",
+  "volume24h": 2992160966,
+  "cumulativeVolume": 423795430715,
+  "tvl": 241715542,
+  "openInterest": 1960318016,
   "numMarkets": 576,
   "rwaMarkets": 135,
-  "rwaVolumeShare": 0.7147,
+  "rwaVolumeShare": 0.7062,
   "topMarkets": [
     {
       "ticker": "US100S",
       "name": "Swap on US Non-Financial 100",
-      "volume24h": 1002254077,
-      "openInterest": 74185017,
+      "volume24h": 960203969,
+      "openInterest": 75055063,
       "rwa": true
     },
     {
       "ticker": "BTC",
       "name": "Bitcoin",
-      "volume24h": 432112079,
-      "openInterest": 193721746,
+      "volume24h": 417526618,
+      "openInterest": 194479197,
       "rwa": false
     },
     {
       "ticker": "US30S",
       "name": "Swap on US30 Spot",
-      "volume24h": 317597982,
-      "openInterest": 7991830,
-      "rwa": true
-    },
-    {
-      "ticker": "US500S",
-      "name": "Swap on US 500",
-      "volume24h": 297475722,
-      "openInterest": 31610650,
+      "volume24h": 316997558,
+      "openInterest": 7705814,
       "rwa": true
     },
     {
       "ticker": "ETH",
       "name": "Ethereum",
-      "volume24h": 266212946,
-      "openInterest": 127662371,
+      "volume24h": 298606580,
+      "openInterest": 129226308,
       "rwa": false
+    },
+    {
+      "ticker": "US500S",
+      "name": "Swap on US 500",
+      "volume24h": 286416172,
+      "openInterest": 32096383,
+      "rwa": true
     },
     {
       "ticker": "XAUS",
       "name": "Swap on Gold Spot",
-      "volume24h": 199914807,
-      "openInterest": 46557339,
+      "volume24h": 204059766,
+      "openInterest": 46267455,
       "rwa": true
     },
     {
       "ticker": "XAGS",
       "name": "Swap on Silver Spot",
-      "volume24h": 75037809,
-      "openInterest": 9884753,
+      "volume24h": 74330504,
+      "openInterest": 10242649,
       "rwa": true
     },
     {
       "ticker": "DXIP",
       "name": "Swap on Dollar Index",
-      "volume24h": 47168775,
+      "volume24h": 45066323,
       "openInterest": 6145286,
+      "rwa": true
+    },
+    {
+      "ticker": "US2KS",
+      "name": "Swap on US2K Spot",
+      "volume24h": 32045706,
+      "openInterest": 2582740,
       "rwa": true
     },
     {
       "ticker": "HYPE",
       "name": "Hyperliquid",
-      "volume24h": 31828059,
-      "openInterest": 23815365,
+      "volume24h": 30986883,
+      "openInterest": 23844375,
       "rwa": false
+    }
+  ],
+  "swapMarkets": [
+    {
+      "ticker": "US100S",
+      "name": "Swap on US Non-Financial 100",
+      "volume24h": 960203969,
+      "openInterest": 75055063,
+      "rwa": true
+    },
+    {
+      "ticker": "US30S",
+      "name": "Swap on US30 Spot",
+      "volume24h": 316997558,
+      "openInterest": 7705814,
+      "rwa": true
+    },
+    {
+      "ticker": "US500S",
+      "name": "Swap on US 500",
+      "volume24h": 286416172,
+      "openInterest": 32096383,
+      "rwa": true
+    },
+    {
+      "ticker": "XAUS",
+      "name": "Swap on Gold Spot",
+      "volume24h": 204059766,
+      "openInterest": 46267455,
+      "rwa": true
+    },
+    {
+      "ticker": "XAGS",
+      "name": "Swap on Silver Spot",
+      "volume24h": 74330504,
+      "openInterest": 10242649,
+      "rwa": true
+    },
+    {
+      "ticker": "DXIP",
+      "name": "Swap on Dollar Index",
+      "volume24h": 45066323,
+      "openInterest": 6145286,
+      "rwa": true
     },
     {
       "ticker": "US2KS",
       "name": "Swap on US2K Spot",
-      "volume24h": 31805158,
-      "openInterest": 2558704,
+      "volume24h": 32045706,
+      "openInterest": 2582740,
+      "rwa": true
+    },
+    {
+      "ticker": "USOILP",
+      "name": "Swap on WTI Crude Oil",
+      "volume24h": 18188886,
+      "openInterest": 4166464,
+      "rwa": true
+    },
+    {
+      "ticker": "TWIS",
+      "name": "Swap on Taiwan Index",
+      "volume24h": 16004889,
+      "openInterest": 7573065,
+      "rwa": true
+    },
+    {
+      "ticker": "UKOILP",
+      "name": "Swap on Brent Crude Oil",
+      "volume24h": 14187359,
+      "openInterest": 6551498,
+      "rwa": true
+    },
+    {
+      "ticker": "US400S",
+      "name": "Swap on US MidCap Spot",
+      "volume24h": 10910852,
+      "openInterest": 1660314,
+      "rwa": true
+    },
+    {
+      "ticker": "COPPP",
+      "name": "Swap on Copper Spot",
+      "volume24h": 9237697,
+      "openInterest": 4464218,
       "rwa": true
     }
   ],
@@ -130,6 +216,6 @@ export const METRICS_SNAPSHOT: MetricsData = {
     [1791072000, 1108294272],
     [1791676800, 1088267402],
     [1792281600, 979551495],
-    [1792368000, 969958845]
+    [1792368000, 975533644]
   ]
 };

@@ -3,7 +3,7 @@
 import { useLayoutEffect, useMemo, useRef } from 'react';
 import { CuboidCollider, CylinderCollider, RigidBody } from '@react-three/rapier';
 import { BoxGeometry, InstancedMesh, Matrix4, Quaternion, Vector3 } from 'three';
-import { AUDIENCE, INTERACTIVE_POINTS, METRICS_STAND, seededRandom, standCenterX, STANDS, TWITTER_WALL } from '@/lib/layout';
+import { AUDIENCE, INTERACTIVE_POINTS, METRICS_STAND, seededRandom, STANDS, standToWorld, TWITTER_WALL } from '@/lib/layout';
 import { BISTRO_SETS, COCKTAIL_TABLES, LOUNGE_SEATS, LOUNGES } from './Amenities';
 import { CAFE_CUSTOMERS, CAFE_SEATS } from './Cafe';
 import {
@@ -110,14 +110,10 @@ function buildCrowd(): CrowdData {
 
   /* Visiteurs devant chaque stand (face au comptoir). */
   for (const s of STANDS) {
-    const cx = standCenterX(s.side);
-    const dir = s.side === 'left' ? 1 : -1;
-    const zs = s.side === 'left' ? 1 : -1;
-    const counterZ = s.z + zs * -1.2;
     for (const dz of [-0.9, 0.7]) {
-      const px = cx + dir * 2.0;
-      const pz = counterZ + dz;
-      all.push(person([px, 0, pz], dir > 0 ? -Math.PI / 2 : Math.PI / 2, 'stand'));
+      const [px, pz] = standToWorld(s, 2.0, s.zs * -1.2 + dz);
+      // Regarde vers le comptoir (-X local).
+      all.push(person([px, 0, pz], s.rotY - Math.PI / 2, 'stand'));
     }
   }
 

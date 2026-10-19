@@ -4,11 +4,14 @@ Hall de conférence 3D interactif dédié à **Variational** (Omni & Pro, sur Ar
 Une salle claire et corporate, avec :
 
 - une estrade où trois intervenants sont assis (Lucas Schuermann, l'interviewer et un invité) avec leurs micros ;
-- un grand écran qui affiche une bannière HD animée du Summit, ou un extrait YouTube à la demande ;
-- 4 stands thématiques et un stand central **Live Metrics & Volume** (tour à 4 écrans, anneau-ticker, sculptures 3D de données) alimenté en direct ;
+- un grand écran « Keynote » qui montre de vraies photos de Lucas Schuermann, tirées des miniatures de ses interviews YouTube et créditées, ou un extrait vidéo à la demande ;
+- un **parcours de visite** : les stands produits (01 Moteur RFQ, 02 Omni & 0 % fees, 03 Pro OTC, 05 Variational Swaps) longent l'allée depuis l'entrée ; au fond, de part et d'autre de l'estrade, la visite se termine par 04 Tokenomics $VAR et 06 Avenir & Vision ;
+- un stand central **Live Metrics & Volume** : chiffres officiels d'octobre 2026, données en direct, tour à 4 écrans, anneau-ticker et sculptures 3D de données ;
+- des cristaux verts « Plumbob » (façon Les Sims) au-dessus de chaque borne interactive ;
+- une ambiance gris-bleu mat (murs, sol, plafond) qui fait ressortir les stands et les éclairages ;
 - un espace networking meublé : salons avec canapés et fauteuils, mange-debout, tables hautes avec tabourets, totems et kakemonos de marque, bacs végétalisés et plantes ;
 - un plafond habillé : poutres, ponts lumineux avec projecteurs, halo suspendu, enseignes circulaires au-dessus des stands, suspensions chaleureuses ;
-- un café chaleureux (comptoir arrondi bois et marbre, machine à espresso, vitrine, menu ardoise), des toilettes intégrées (bardage bois, portes modernes, signalétique rétroéclairée) et un **Twitter Alpha Wall** avec un totem « Follow & Access » ;
+- un café chaleureux (comptoir arrondi bois et marbre, machine à espresso, vitrine, ardoise « simulateur FDV $VAR »), des toilettes intégrées (bardage bois, portes modernes, signalétique rétroéclairée) et un **Twitter Alpha Wall** avec un totem « Follow & Access » ;
 - une foule de PNJ et des hôtes en t-shirt au logo officiel ;
 - un avatar contrôlable avec des collisions physiques.
 
@@ -69,8 +72,9 @@ components/
     Restrooms.tsx       Toilettes : bardage à lames, portes, pictogrammes rétroéclairés
     Interaction.tsx     Détection de proximité, raccourcis E et Échap
   ui/                   Bloc 4 : UI 2D en Tailwind
-    Modal.tsx           Pop-up à onglets : Essentiel, Deep Tech, Visuels, Citations & sources
-    ModalParts.tsx      Chiffres clés, cartes, schéma, galerie + visionneuse, vidéos, liens sociaux
+    Modal.tsx           Pop-up à onglets : Essentiel, Deep Tech, Citations & sources
+    ModalParts.tsx      Chiffres clés, cartes, schéma, vidéos, liens sociaux
+    StandWidgets.tsx    Chiffres officiels, répartition $VAR, simulateur FDV, swaps en direct, roadmap
     MetricsDashboard.tsx Tableau de bord SVG : KPI, historique OI, top marchés, part RWA
     LanguageSwitcher.tsx  Sélecteur FR / EN / KO
     HUD.tsx             Écran d'accueil, invite d'interaction, toasts, aide
@@ -82,9 +86,9 @@ lib/
   brand.ts              Tracés SVG du logo officiel Variational (emblème + wordmark)
   metrics.ts            Chargement et parsing des métriques live (API Variational + DefiLlama)
   metricsSnapshot.ts    Instantané daté utilisé hors ligne / avant le premier chargement
-  visuals.ts            Chiffres clés et figures réelles (captures DefiLlama / docs) par stand
+  visuals.ts            Chiffres clés affichés en tête de chaque stand
+  officialMetrics.ts    Chiffres officiels d'octobre 2026, répartition $VAR, barème FDV
   links.ts              Liens sociaux et lien d'accès / d'affiliation à Omni
-public/research/        Captures et schémas issus de la page Notion (DefiLlama Research, docs Variational)
   store.ts              État global (Zustand) et position du joueur
 public/fonts/           Police Inter (OFL), utilisée par les textes 3D
 ```
@@ -97,6 +101,12 @@ public/fonts/           Police Inter (OFL), utilisée par les textes 3D
 - **Écran de scène (vidéo).** Quand on choisit « Diffuser sur l'écran » dans un pop-up, l'iframe YouTube (`youtube-nocookie.com/embed/…?start=…&end=…`) est rendue avec `Html transform occlude="blending"`, donc les objets 3D situés devant l'écran le masquent correctement. Sa taille est calculée pour que 1280 px correspondent exactement à la largeur de l'écran (18 m). La lecture est automatique et muette (règle des navigateurs). « Arrêter » ramène la bannière. Pour le son, on passe par « Regarder ici » dans le pop-up.
 - **Foule.** Les PNJ statiques sont dessinés avec un `InstancedMesh` par partie du corps, soit environ 7 draw calls par pose. Les PNJ animés (1 sur 100) et le staff sont des objets individuels.
 - **Hors ligne.** Aucun asset n'est téléchargé à l'exécution : pas de HDR (l'environnement est fait de `Lightformer`), les polices sont locales et le logo et le carrelage sont générés sur canvas. Seules les vidéos YouTube et les liens externes ont besoin d'Internet.
+
+## Chiffres officiels (octobre 2026)
+
+Le stand central et son pop-up mettent en avant les chiffres officiels, définis dans `lib/officialMetrics.ts` : volume total de 417,92 Md$, open interest de 2,04 Md$, TVL de 290,88 M$, 575 marchés, revenu net sur 2 semaines de 3 682 137 $ et trésorerie de 11 077 933 USDC.
+
+Ce même fichier contient la répartition du token $VAR (32 % / 18 % / 50 %) et le barème du simulateur FDV : de 28,6 $ par point pour une FDV de 1 Md$ à 857,0 $ pour 30 Md$.
 
 ## Métriques en direct
 

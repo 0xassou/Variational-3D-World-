@@ -1,5 +1,6 @@
 import { BRAND_BLUE } from '@/lib/brand';
 import { formatUsd, type MetricsData } from '@/lib/metrics';
+import { formatMillions, OFFICIAL_METRICS } from '@/lib/officialMetrics';
 import { drawLogo } from './brandTextures';
 
 /* Visuels canvas des écrans du stand « Live Metrics » (redessinés à chaque mise à jour des données). */
@@ -43,26 +44,30 @@ function footer(ctx: CanvasRenderingContext2D, text: string) {
   ctx.fillText(text, 36, SCREEN_H - 36);
 }
 
-export function drawKpiScreen(ctx: CanvasRenderingContext2D, m: MetricsData, live: boolean, pulse: number) {
-  background(ctx, 'Live Metrics', live, pulse);
+/** Écran principal : chiffres officiels d'octobre 2026 (6 indicateurs). */
+export function drawKpiScreen(ctx: CanvasRenderingContext2D, _m: MetricsData, live: boolean, pulse: number) {
+  background(ctx, 'Official · Oct 2026', live, pulse);
+  const o = OFFICIAL_METRICS;
   const rows: [string, string][] = [
-    ['24H VOLUME', formatUsd(m.volume24h)],
-    ['OPEN INTEREST', formatUsd(m.openInterest)],
-    ['TVL', formatUsd(m.tvl)],
-    ['MARKETS', `${m.numMarkets} · ${m.rwaMarkets} RWA`],
+    ['TOTAL VOLUME', formatUsd(o.totalVolume)],
+    ['OPEN INTEREST', formatUsd(o.openInterest)],
+    ['TVL', formatMillions(o.tvl)],
+    ['MARKETS', `${o.markets}`],
+    ['2-WEEK NET REVENUE', `$${(o.netRevenue2w / 1e6).toFixed(2)}M`],
+    ['TREASURY', `${(o.treasuryUsdc / 1e6).toFixed(2)}M USDC`],
   ];
   rows.forEach(([label, value], i) => {
-    const y = 250 + i * 165;
+    const y = 210 + i * 118;
     ctx.fillStyle = 'rgba(255,255,255,0.06)';
-    ctx.fillRect(36, y, SCREEN_W - 72, 140);
+    ctx.fillRect(36, y, SCREEN_W - 72, 102);
     ctx.fillStyle = MUTED;
-    ctx.font = '700 24px Inter, Arial, sans-serif';
-    ctx.fillText(label, 60, y + 44);
+    ctx.font = '700 22px Inter, Arial, sans-serif';
+    ctx.fillText(label, 58, y + 36);
     ctx.fillStyle = '#ffffff';
-    ctx.font = `800 ${value.length > 10 ? 46 : 58}px Inter, Arial, sans-serif`;
-    ctx.fillText(value, 60, y + 110);
+    ctx.font = `800 ${value.length > 11 ? 38 : 46}px Inter, Arial, sans-serif`;
+    ctx.fillText(value, 58, y + 84);
   });
-  footer(ctx, `All-time volume ${formatUsd(m.cumulativeVolume, 1)}`);
+  footer(ctx, 'Official Variational figures · October 2026');
 }
 
 export function drawOiScreen(ctx: CanvasRenderingContext2D, m: MetricsData, live: boolean, pulse: number) {
@@ -175,7 +180,8 @@ export function drawTicker(ctx: CanvasRenderingContext2D, m: MetricsData, w: num
   ctx.fillStyle = '#ffffff';
   ctx.font = `800 ${Math.round(h * 0.5)}px Inter, Arial, sans-serif`;
   ctx.textBaseline = 'middle';
-  const text = `24H VOLUME ${formatUsd(m.volume24h)}   ·   OPEN INTEREST ${formatUsd(m.openInterest)}   ·   TVL ${formatUsd(m.tvl)}   ·   ${m.numMarkets} MARKETS   ·   `;
+  const o = OFFICIAL_METRICS;
+  const text = `TOTAL VOLUME ${formatUsd(o.totalVolume)}   ·   OPEN INTEREST ${formatUsd(o.openInterest)}   ·   TVL ${formatMillions(o.tvl)}   ·   ${o.markets} MARKETS   ·   LIVE 24H VOLUME ${formatUsd(m.volume24h)}   ·   `;
   let x = 20;
   while (x < w) {
     ctx.fillText(text, x, h / 2 + 2);

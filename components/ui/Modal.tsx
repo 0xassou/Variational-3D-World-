@@ -1,15 +1,18 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  BadgeCheck,
   BookOpen,
-  ChartLine,
+  ChartPie as PieChart,
   CirclePlay,
+  Coins,
   Cpu,
   ExternalLink,
   GraduationCap,
-  Images,
+  Landmark,
   LayoutDashboard,
+  Map as MapIcon,
   Link2,
   Quote as QuoteIcon,
   Sparkles,
@@ -20,15 +23,14 @@ import {
 import { CONTENT, VIDEOS, type InteractiveId, type Lang, type StandContent, type VideoClip } from '@/lib/content';
 import { t, type UIKey } from '@/lib/i18n';
 import { useWorld } from '@/lib/store';
-import { FIGURES, HIGHLIGHTS, type Figure } from '@/lib/visuals';
+import { HIGHLIGHTS } from '@/lib/visuals';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { MetricsDashboard } from './MetricsDashboard';
+import { AllocationDonut, FdvSimulator, LeadCard, OfficialKpis, SwapsTable, Timeline } from './StandWidgets';
 import {
   CompareTable,
-  FigureCard,
   Flow,
   Highlights,
-  Lightbox,
   Quotes,
   Section,
   SocialLinks,
@@ -39,48 +41,69 @@ import {
 } from './ModalParts';
 import { VariationalLogo } from './VariationalLogo';
 
-type Tab = 'overview' | 'deep' | 'visuals' | 'media';
+type Tab = 'overview' | 'deep' | 'media';
 
 const TAB_LABEL: Record<Tab, UIKey> = {
   overview: 'tabOverview',
   deep: 'tabDeep',
-  visuals: 'tabVisuals',
   media: 'tabMedia',
 };
 
 function availableTabs(id: InteractiveId, content: StandContent): Tab[] {
   const tabs: Tab[] = ['overview'];
   if (content.deepTech.fr.length || content.table) tabs.push('deep');
-  if (FIGURES[id]?.length) tabs.push('visuals');
   if ((content.quotes.length && id !== 'twitter') || content.sources.length || (content.videoIds.length && id !== 'stage')) {
     tabs.push('media');
   }
   return tabs;
 }
 
-function Overview({ id, content, lang, onFigure }: { id: InteractiveId; content: StandContent; lang: Lang; onFigure: (f: Figure) => void }) {
+function Overview({ id, content, lang }: { id: InteractiveId; content: StandContent; lang: Lang }) {
   const highlights = HIGHLIGHTS[id];
-  const figure = FIGURES[id]?.[0];
   const videos = content.videoIds.map((v) => VIDEOS[v]).filter((v): v is VideoClip => Boolean(v));
-
-  if (id === 'metrics') {
-    return (
-      <>
-        <Section icon={<LayoutDashboard className="h-4 w-4" aria-hidden />} title={t('dashboard', lang)}>
-          <MetricsDashboard lang={lang} />
-        </Section>
-        <Section icon={<GraduationCap className="h-4 w-4" aria-hidden />} title={t('beginner', lang)}>
-          <StepCards items={content.beginner[lang]} accent="#2f80ed" />
-        </Section>
-      </>
-    );
-  }
+  const steps = { fr: 'Comprendre en', en: 'Understand in', ko: '단계로 이해하기' };
+  const stepsTitle = lang === 'ko' ? `${content.beginner.ko.length}${steps.ko}` : `${steps[lang]} ${content.beginner[lang].length} ${lang === 'fr' ? 'étapes' : 'steps'}`;
 
   return (
     <>
+      {content.lead && (
+        <section className="mt-2">
+          <LeadCard text={content.lead[lang]} accent={content.accent === '#0b1f3a' ? '#4C9AF8' : content.accent} />
+        </section>
+      )}
+      {id === 'metrics' && (
+        <>
+          <Section icon={<BadgeCheck className="h-4 w-4" aria-hidden />} title={t('keyFigures', lang)}>
+            <OfficialKpis lang={lang} />
+          </Section>
+          <Section icon={<LayoutDashboard className="h-4 w-4" aria-hidden />} title={t('dashboard', lang)}>
+            <MetricsDashboard lang={lang} />
+          </Section>
+        </>
+      )}
       {highlights && (
         <Section icon={<Sparkles className="h-4 w-4" aria-hidden />} title={t('keyFigures', lang)}>
           <Highlights items={highlights} accent={content.accent} lang={lang} />
+        </Section>
+      )}
+      {id === 'tokenomics' && (
+        <>
+          <Section icon={<PieChart className="h-4 w-4" aria-hidden />} title={lang === 'ko' ? '$VAR 분배' : lang === 'en' ? '$VAR allocation' : 'Répartition du $VAR'}>
+            <AllocationDonut lang={lang} />
+          </Section>
+          <Section icon={<Coins className="h-4 w-4" aria-hidden />} title="FDV">
+            <FdvSimulator lang={lang} />
+          </Section>
+        </>
+      )}
+      {id === 'swaps' && (
+        <Section icon={<Landmark className="h-4 w-4" aria-hidden />} title="TradFi swaps">
+          <SwapsTable lang={lang} />
+        </Section>
+      )}
+      {id === 'vision' && content.timeline && (
+        <Section icon={<MapIcon className="h-4 w-4" aria-hidden />} title="Roadmap">
+          <Timeline items={content.timeline} lang={lang} />
         </Section>
       )}
       {id === 'twitter' && (
@@ -93,17 +116,12 @@ function Overview({ id, content, lang, onFigure }: { id: InteractiveId; content:
           </Section>
         </>
       )}
-      <Section icon={<GraduationCap className="h-4 w-4" aria-hidden />} title={t('beginner', lang)}>
-        <StepCards items={content.beginner[lang]} accent={content.accent} />
+      <Section icon={<GraduationCap className="h-4 w-4" aria-hidden />} title={stepsTitle}>
+        <StepCards items={content.beginner[lang]} accent={content.accent === '#0b1f3a' ? '#2f80ed' : content.accent} />
       </Section>
       {content.flow && (
         <Section icon={<BookOpen className="h-4 w-4" aria-hidden />} title={t('flow', lang)}>
           <Flow steps={content.flow[lang]} accent={content.accent} />
-        </Section>
-      )}
-      {figure && (
-        <Section icon={<Images className="h-4 w-4" aria-hidden />} title={t('tabVisuals', lang)}>
-          <FigureCard figure={figure} lang={lang} onOpen={() => onFigure(figure)} large />
         </Section>
       )}
       {id === 'stage' && videos.length > 0 && (
@@ -136,19 +154,6 @@ function DeepTech({ content, lang }: { content: StandContent; lang: Lang }) {
         </Section>
       )}
     </>
-  );
-}
-
-function Visuals({ id, lang, onFigure }: { id: InteractiveId; lang: Lang; onFigure: (f: Figure) => void }) {
-  const figures = FIGURES[id] ?? [];
-  return (
-    <Section icon={<ChartLine className="h-4 w-4" aria-hidden />} title={t('tabVisuals', lang)}>
-      <div className="grid gap-4 md:grid-cols-2">
-        {figures.map((f) => (
-          <FigureCard key={f.src + f.caption.en} figure={f} lang={lang} onOpen={() => onFigure(f)} />
-        ))}
-      </div>
-    </Section>
   );
 }
 
@@ -201,13 +206,10 @@ export function Modal() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const [tab, setTab] = useState<Tab>('overview');
-  const [figure, setFigure] = useState<Figure | null>(null);
-  const closeFigure = useCallback(() => setFigure(null), []);
 
   useEffect(() => {
     if (!activeId) return;
     setTab('overview');
-    setFigure(null);
     closeRef.current?.focus({ preventScroll: true });
   }, [activeId]);
 
@@ -292,9 +294,8 @@ export function Modal() {
         </header>
 
         <div ref={scrollRef} className="overflow-y-auto bg-slate-50/40 px-5 pb-6 pt-4 sm:px-7">
-          {tab === 'overview' && <Overview id={activeId} content={content} lang={lang} onFigure={setFigure} />}
+          {tab === 'overview' && <Overview id={activeId} content={content} lang={lang} />}
           {tab === 'deep' && <DeepTech content={content} lang={lang} />}
-          {tab === 'visuals' && <Visuals id={activeId} lang={lang} onFigure={setFigure} />}
           {tab === 'media' && <Media id={activeId} content={content} lang={lang} />}
         </div>
 
@@ -302,7 +303,6 @@ export function Modal() {
           {t('disclaimer', lang)}
         </footer>
       </div>
-      <Lightbox figure={figure} lang={lang} onClose={closeFigure} />
     </div>
   );
 }

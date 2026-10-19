@@ -50,17 +50,22 @@ interface KioskProps {
 export function Kiosk({ id, accent, label, position, rotationY = 0 }: KioskProps) {
   const isNear = useWorld((s) => s.nearbyId === id);
   const marker = useRef<Group>(null);
+  const crystal = useRef<MeshStandardMaterial>(null);
   const ring = useRef<Mesh>(null);
   const screenMap = useMemo(() => getKioskTexture(accent, label), [accent, label]);
 
   useFrame(({ clock }, dt) => {
     const time = clock.elapsedTime;
     if (marker.current) {
-      const target = isNear ? 1 : 0.0001;
-      const s = marker.current.scale.x + (target - marker.current.scale.x) * Math.min(1, dt * 8);
+      // Cristal « Plumbob » : toujours visible, flotte et tourne ; grossit et brille à portée.
+      const target = isNear ? 1.25 : 1;
+      const s = marker.current.scale.x + (target - marker.current.scale.x) * Math.min(1, dt * 6);
       marker.current.scale.setScalar(s);
-      marker.current.position.y = 2.55 + Math.sin(time * 2.4) * 0.08;
-      marker.current.rotation.y = time * 0.8;
+      marker.current.position.y = 2.75 + Math.sin(time * 1.8 + position[0]) * 0.1;
+      marker.current.rotation.y = time * 0.9;
+    }
+    if (crystal.current) {
+      crystal.current.emissiveIntensity = (isNear ? 1.1 : 0.55) + Math.sin(time * 3) * 0.15;
     }
     if (ring.current) {
       const mat = ring.current.material as MeshStandardMaterial;
@@ -106,11 +111,26 @@ export function Kiosk({ id, accent, label, position, rotationY = 0 }: KioskProps
         <meshStandardMaterial color={accent} transparent opacity={0.18} depthWrite={false} />
       </mesh>
 
-      {/* Marqueur flottant visible à portée */}
-      <group ref={marker} scale={0.0001}>
-        <mesh>
-          <octahedronGeometry args={[0.18, 0]} />
-          <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.4} />
+      {/* Cristal vert type « Plumbob » (Les Sims) : indicateur d'interactivité */}
+      <group ref={marker} position={[0, 2.75, 0]}>
+        <mesh scale={[1, 1.9, 1]} castShadow>
+          <octahedronGeometry args={[0.2, 0]} />
+          <meshStandardMaterial
+            ref={crystal}
+            color="#3ee07a"
+            emissive="#1fd65f"
+            emissiveIntensity={0.55}
+            roughness={0.15}
+            metalness={0.1}
+            transparent
+            opacity={0.92}
+            flatShading
+          />
+        </mesh>
+        {/* Halo doux */}
+        <mesh scale={[1, 1.9, 1]}>
+          <octahedronGeometry args={[0.27, 0]} />
+          <meshBasicMaterial color="#5cff9a" transparent opacity={0.16} depthWrite={false} toneMapped={false} />
         </mesh>
       </group>
 

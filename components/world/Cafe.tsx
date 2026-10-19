@@ -309,7 +309,7 @@ export function Cafe() {
 
       {/* Menu ardoise + enseigne */}
       <mesh position={[-HALF_W + 0.04, 3.55, cz]} rotation={[0, Math.PI / 2, 0]}>
-        <planeGeometry args={[3.2, 2]} />
+        <planeGeometry args={[3.2, 2.19]} />
         <meshBasicMaterial map={menu} toneMapped={false} />
       </mesh>
       <Text font={FONT_BOLD} position={[-HALF_W + 0.05, 5.05, cz]} rotation={[0, Math.PI / 2, 0]} fontSize={0.42} letterSpacing={0.2} color="#b08d57" anchorX="center" anchorY="middle">

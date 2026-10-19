@@ -33,34 +33,60 @@ const BANNER_W = 1920;
 const BANNER_H = 1080;
 const CLIP_IDS = Object.keys(VIDEOS);
 const SLIDE_SECONDS = 6;
+const PHOTO_SECONDS = 9;
 
-function drawBanner(ctx: CanvasRenderingContext2D, time: number) {
+/**
+ * Photos réelles de Lucas Schuermann : miniatures officielles de ses interviews YouTube
+ * (servies avec CORS par i.ytimg.com). Recadrées sur la moitié droite, où il apparaît.
+ */
+const SPEAKER_PHOTOS = [
+  { youtubeId: 'Y_pWv3VayqU', credit: 'Photo: When Shift Happens (YouTube)' },
+  { youtubeId: 'AC8p7kjlFas', credit: 'Photo: The Rollup (YouTube)' },
+];
+
+interface LoadedPhoto {
+  img: HTMLImageElement;
+  credit: string;
+}
+
+function drawCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, w: number, h: number) {
+  // Recadrage « cover » ancré à droite (le visage est sur la droite des miniatures).
+  const iw = img.naturalWidth;
+  const ih = img.naturalHeight;
+  const scale = Math.max(w / iw, h / ih);
+  const sw = w / scale;
+  const sh = h / scale;
+  const sx = Math.max(0, iw - sw);
+  const sy = (ih - sh) / 2;
+  ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+}
+
+function drawBanner(ctx: CanvasRenderingContext2D, time: number, photos: LoadedPhoto[]) {
   const W = BANNER_W;
   const H = BANNER_H;
 
-  // Fond clair avec dégradé bleu de marque.
+  // Fond bleu nuit de marque.
   const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, '#ffffff');
-  bg.addColorStop(0.55, '#eef5ff');
-  bg.addColorStop(1, '#d6e8fe');
+  bg.addColorStop(0, '#0b1f3a');
+  bg.addColorStop(1, '#13325e');
   ctx.fillStyle = bg;
   ctx.fillRect(0, 0, W, H);
 
-  // Grand emblème filigrane qui « respire » légèrement.
+  // Filigrane emblème.
   ctx.save();
-  ctx.globalAlpha = 0.1 + Math.sin(time * 0.6) * 0.02;
-  drawEmblem(ctx, 1080, 140 + Math.sin(time * 0.4) * 10, 760, BRAND_BLUE);
+  ctx.globalAlpha = 0.08 + Math.sin(time * 0.6) * 0.02;
+  drawEmblem(ctx, 1240, 120, 820, BRAND_BLUE);
   ctx.restore();
 
-  // Vagues décoratives en bas.
+  // Vagues lumineuses en bas.
   ctx.save();
   ctx.strokeStyle = BRAND_BLUE;
   for (let k = 0; k < 3; k++) {
-    ctx.globalAlpha = 0.18 - k * 0.04;
-    ctx.lineWidth = 6 - k;
+    ctx.globalAlpha = 0.35 - k * 0.09;
+    ctx.lineWidth = 5 - k;
     ctx.beginPath();
     for (let x = 0; x <= W; x += 16) {
-      const y = 930 + k * 34 + Math.sin(x / 210 + time * 0.8 + k) * 22;
+      const y = 990 + k * 26 + Math.sin(x / 210 + time * 0.8 + k) * 16;
       if (x === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
@@ -68,70 +94,108 @@ function drawBanner(ctx: CanvasRenderingContext2D, time: number) {
   }
   ctx.restore();
 
-  // Logo officiel.
-  drawLogo(ctx, 110, 96, 84, { emblem: BRAND_BLUE, text: '#0b1f3a' });
-
-  // Pastille « LIVE » animée.
-  const pulse = 0.5 + 0.5 * Math.sin(time * 4);
-  ctx.fillStyle = '#ffffff';
-  ctx.strokeStyle = '#dbe7f7';
-  ctx.lineWidth = 3;
-  roundRect(ctx, 1450, 96, 360, 84, 42);
-  ctx.fill();
+  /* --- Panneau photo de l'intervenant --- */
+  const px = 80;
+  const py = 90;
+  const pw = 720;
+  const ph = 860;
+  ctx.save();
+  roundRect(ctx, px, py, pw, ph, 36);
+  ctx.clip();
+  ctx.fillStyle = '#16345f';
+  ctx.fillRect(px, py, pw, ph);
+  if (photos.length) {
+    const idx = Math.floor(time / PHOTO_SECONDS) % photos.length;
+    const phase = (time % PHOTO_SECONDS) / PHOTO_SECONDS;
+    drawCover(ctx, photos[idx].img, px, py, pw, ph);
+    // Fondu enchaîné vers la photo suivante.
+    if (photos.length > 1 && phase > 0.88) {
+      ctx.globalAlpha = (phase - 0.88) / 0.12;
+      drawCover(ctx, photos[(idx + 1) % photos.length].img, px, py, pw, ph);
+      ctx.globalAlpha = 1;
+    }
+  } else {
+    drawEmblem(ctx, px + 170, py + 250, 360, BRAND_BLUE);
+  }
+  // Dégradé bas + identité.
+  const fade = ctx.createLinearGradient(0, py + ph * 0.55, 0, py + ph);
+  fade.addColorStop(0, 'rgba(11,31,58,0)');
+  fade.addColorStop(1, 'rgba(11,31,58,0.95)');
+  ctx.fillStyle = fade;
+  ctx.fillRect(px, py, pw, ph);
+  ctx.restore();
+  ctx.strokeStyle = BRAND_BLUE;
+  ctx.lineWidth = 6;
+  roundRect(ctx, px, py, pw, ph, 36);
   ctx.stroke();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 64px Inter, Arial, sans-serif';
+  ctx.fillText('Lucas Schuermann', px + 44, py + ph - 110);
+  ctx.fillStyle = '#9cc8fb';
+  ctx.font = '600 36px Inter, Arial, sans-serif';
+  ctx.fillText('Founder & CEO, Variational', px + 44, py + ph - 60);
+  if (photos.length) {
+    const idx = Math.floor(time / PHOTO_SECONDS) % photos.length;
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.font = '500 22px Inter, Arial, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(photos[idx].credit, px + pw - 30, py + 44);
+    ctx.textAlign = 'left';
+  }
+
+  /* --- Colonne de droite --- */
+  const rx = 880;
+  drawLogo(ctx, rx, 110, 70, { emblem: BRAND_BLUE, text: '#ffffff' });
+
+  const pulse = 0.5 + 0.5 * Math.sin(time * 4);
+  ctx.fillStyle = 'rgba(255,255,255,0.08)';
+  roundRect(ctx, rx, 230, 400, 76, 38);
+  ctx.fill();
   ctx.fillStyle = `rgba(239, 68, 68, ${0.55 + pulse * 0.45})`;
   ctx.beginPath();
-  ctx.arc(1500, 138, 14 + pulse * 4, 0, Math.PI * 2);
+  ctx.arc(rx + 46, 268, 13 + pulse * 4, 0, Math.PI * 2);
   ctx.fill();
-  ctx.fillStyle = '#0b1f3a';
-  ctx.font = '800 38px Inter, Arial, sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 34px Inter, Arial, sans-serif';
   ctx.textBaseline = 'middle';
-  ctx.fillText('LIVE · ON STAGE', 1532, 140);
-
-  // Titre principal.
+  ctx.fillText('KEYNOTE · LIVE', rx + 80, 270);
   ctx.textBaseline = 'alphabetic';
-  ctx.fillStyle = '#0b1f3a';
-  ctx.font = '800 132px Inter, Arial, sans-serif';
-  ctx.fillText('Variational Summit', 110, 400);
-  ctx.fillStyle = '#1f6bd1';
-  ctx.font = '700 52px Inter, Arial, sans-serif';
-  ctx.fillText('Onchain brokerage · RFQ · 0% fees · Arbitrum', 112, 480);
-  ctx.fillStyle = '#334155';
-  ctx.font = '400 44px Inter, Arial, sans-serif';
-  ctx.fillText('Fireside chat with Lucas Schuermann, CEO of Variational', 112, 560);
 
-  // Vignette dynamique « Up next » qui fait défiler les extraits.
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 96px Inter, Arial, sans-serif';
+  ctx.fillText('Variational', rx, 430);
+  ctx.fillText('Summit 2026', rx, 530);
+  ctx.fillStyle = '#9cc8fb';
+  ctx.font = '700 40px Inter, Arial, sans-serif';
+  ctx.fillText('RFQ · 0% fees · 575+ markets · RWA', rx + 2, 600);
+
+  // Vignette « Up next ».
   const slide = Math.floor(time / SLIDE_SECONDS) % CLIP_IDS.length;
   const progress = (time % SLIDE_SECONDS) / SLIDE_SECONDS;
   const clip = VIDEOS[CLIP_IDS[slide]];
-  const cardX = 110;
-  const cardY = 640;
-  const cardW = 1080;
-  const cardH = 230;
-  ctx.save();
-  ctx.shadowColor = 'rgba(15, 23, 42, 0.12)';
-  ctx.shadowBlur = 30;
-  ctx.shadowOffsetY = 10;
+  const cardX = rx;
+  const cardY = 660;
+  const cardW = 920;
+  const cardH = 210;
   ctx.fillStyle = '#ffffff';
-  roundRect(ctx, cardX, cardY, cardW, cardH, 28);
+  roundRect(ctx, cardX, cardY, cardW, cardH, 26);
   ctx.fill();
-  ctx.restore();
   ctx.fillStyle = BRAND_BLUE;
-  roundRect(ctx, cardX, cardY, 14, cardH, 7);
+  roundRect(ctx, cardX, cardY, 12, cardH, 6);
   ctx.fill();
   ctx.fillStyle = '#64748b';
-  ctx.font = '700 30px Inter, Arial, sans-serif';
-  ctx.fillText(`UP NEXT · ${slide + 1}/${CLIP_IDS.length} · ${clip.show.toUpperCase()}`, cardX + 50, cardY + 62);
+  ctx.font = '700 26px Inter, Arial, sans-serif';
+  ctx.fillText(`UP NEXT · ${slide + 1}/${CLIP_IDS.length} · ${clip.show.toUpperCase()}`, cardX + 44, cardY + 54);
   ctx.fillStyle = '#0b1f3a';
-  ctx.font = '700 48px Inter, Arial, sans-serif';
+  ctx.font = '700 42px Inter, Arial, sans-serif';
   ctx.textBaseline = 'top';
-  wrapText(ctx, clip.title.en, cardX + 50, cardY + 90, cardW - 100, 58, 2);
+  wrapText(ctx, clip.title.en, cardX + 44, cardY + 76, cardW - 220, 50, 2);
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = '#e2e8f0';
-  roundRect(ctx, cardX + 50, cardY + cardH - 30, cardW - 100, 8, 4);
+  roundRect(ctx, cardX + 44, cardY + cardH - 26, cardW - 88, 8, 4);
   ctx.fill();
   ctx.fillStyle = BRAND_BLUE;
-  roundRect(ctx, cardX + 50, cardY + cardH - 30, (cardW - 100) * progress, 8, 4);
+  roundRect(ctx, cardX + 44, cardY + cardH - 26, (cardW - 88) * progress, 8, 4);
   ctx.fill();
 
   // Horloge locale.
@@ -139,13 +203,13 @@ function drawBanner(ctx: CanvasRenderingContext2D, time: number) {
   const hh = String(now.getHours()).padStart(2, '0');
   const mm = String(now.getMinutes()).padStart(2, '0');
   ctx.fillStyle = '#0b1f3a';
-  ctx.font = '800 96px Inter, Arial, sans-serif';
+  ctx.font = '800 64px Inter, Arial, sans-serif';
   ctx.textAlign = 'right';
-  ctx.fillText(`${hh}:${mm}`, 1810, 760);
-  ctx.fillStyle = '#64748b';
-  ctx.font = '600 34px Inter, Arial, sans-serif';
-  ctx.fillText('Main Stage · Hall A', 1810, 820);
+  ctx.fillText(`${hh}:${mm}`, cardX + cardW - 36, cardY + 96);
   ctx.textAlign = 'left';
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = '600 28px Inter, Arial, sans-serif';
+  ctx.fillText('Main Stage · Hall A', rx, 940);
 }
 
 function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
@@ -170,15 +234,32 @@ function SummitBanner() {
     return { texture: tex, ctx: canvas.getContext('2d') };
   }, []);
   const lastDraw = useRef(-1);
+  const photos = useRef<LoadedPhoto[]>([]);
 
   useEffect(() => () => texture.dispose(), [texture]);
+
+  // Chargement des photos réelles (CORS) ; en cas d'échec, l'emblème reste affiché.
+  useEffect(() => {
+    let cancelled = false;
+    SPEAKER_PHOTOS.forEach(({ youtubeId, credit }) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        if (!cancelled) photos.current = [...photos.current, { img, credit }];
+      };
+      img.src = `https://i.ytimg.com/vi/${youtubeId}/maxresdefault.jpg`;
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
     // ~10 rafraîchissements/s suffisent pour l'animation et restent légers.
     if (!ctx || t - lastDraw.current < 0.1) return;
     lastDraw.current = t;
-    drawBanner(ctx, t);
+    drawBanner(ctx, t, photos.current);
     texture.needsUpdate = true;
   });
 

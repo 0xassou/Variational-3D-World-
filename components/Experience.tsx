@@ -16,17 +16,17 @@ import { MetricsStand } from './world/MetricsStand';
 import { Stage } from './world/Stage';
 import { Stands } from './world/Stands';
 
-const BACKGROUND = '#f4f6fa';
+const BACKGROUND = '#c9d1da';
 
 /** Éclairage corporate : lumière douce et diffuse, une directionnelle principale avec ombres douces. */
 function Lighting() {
   return (
     <>
-      <ambientLight intensity={0.45} />
-      <hemisphereLight args={['#ffffff', '#dfe3ea', 0.9]} />
+      <ambientLight intensity={0.36} />
+      <hemisphereLight args={['#f4f7fb', '#a9b4c1', 0.75]} />
       <directionalLight
         position={[18, 32, 14]}
-        intensity={1.6}
+        intensity={1.3}
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-bias={-0.0004}
@@ -42,7 +42,7 @@ function Lighting() {
       <directionalLight position={[-20, 18, -10]} intensity={0.35} />
       {/* Environnement local (aucun HDR téléchargé) pour des reflets propres */}
       <Environment resolution={256} frames={1}>
-        <Lightformer form="rect" intensity={2.2} position={[0, 10, 0]} rotation-x={Math.PI / 2} scale={[40, 40, 1]} />
+        <Lightformer form="rect" intensity={1.3} position={[0, 10, 0]} rotation-x={Math.PI / 2} scale={[40, 40, 1]} />
         <Lightformer form="rect" intensity={1.2} position={[0, 5, -30]} scale={[30, 8, 1]} />
         <Lightformer form="rect" intensity={1.2} position={[0, 5, 30]} rotation-y={Math.PI} scale={[30, 8, 1]} />
         <Lightformer form="rect" intensity={0.8} position={[-30, 5, 0]} rotation-y={Math.PI / 2} scale={[40, 6, 1]} />

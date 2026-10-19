@@ -3,7 +3,7 @@
 import { Text } from '@react-three/drei';
 import { CuboidCollider, CylinderCollider, RigidBody } from '@react-three/rapier';
 import { CONTENT } from '@/lib/content';
-import { interactivePoint, STAND_SIZE, standCenterX, STANDS, type StandLayout } from '@/lib/layout';
+import { STAND_SIZE, standKioskLocal, STANDS, type StandLayout } from '@/lib/layout';
 import { Plant } from './Decor';
 import { FONT_BOLD, FONT_REGULAR } from './Hall';
 import { interactiveHandlers, Kiosk } from './Kiosk';
@@ -36,11 +36,10 @@ function ChartPanel({ accent, position, zs }: { accent: string; position: [numbe
 function Stand({ layout }: { layout: StandLayout }) {
   const content = CONTENT[layout.id];
   const accent = content.accent;
-  const cx = standCenterX(layout.side);
-  // Les stands de droite sont tournés de 180° : on miroite l'axe z local pour garder la borne côté entrée.
-  const rotationY = layout.side === 'left' ? 0 : Math.PI;
-  const zs = layout.side === 'left' ? 1 : -1;
-  const kiosk = interactivePoint(layout.id);
+
+  // `zs` miroite l'axe z local pour placer la borne du côté voulu (entrée ou estrade).
+  const { rotY: rotationY, zs } = layout;
+  const [kioskX, kioskZ] = standKioskLocal(layout);
   const handlers = interactiveHandlers(layout.id);
 
   const staff: PersonSpec[] = [
@@ -50,7 +49,7 @@ function Stand({ layout }: { layout: StandLayout }) {
   ];
 
   return (
-    <group position={[cx, 0, layout.z]} rotation={[0, rotationY, 0]}>
+    <group position={[layout.x, 0, layout.z]} rotation={[0, rotationY, 0]}>
       {/* Moquette du stand */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]} receiveShadow>
         <planeGeometry args={[D, W]} />
@@ -147,7 +146,7 @@ function Stand({ layout }: { layout: StandLayout }) {
         id={layout.id}
         accent={accent}
         label={content.signTitle}
-        position={[(kiosk.x - cx) * (layout.side === 'left' ? 1 : -1), 0, (kiosk.z - layout.z) * zs]}
+        position={[kioskX, 0, kioskZ]}
         rotationY={Math.PI / 2}
       />
 

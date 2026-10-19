@@ -127,7 +127,7 @@ function Lounge({ x, z }: LoungeLayout) {
 const TOTEM_FACES: string[][] = [
   ['0% FEES', 'Spread-only model', 'Omni on Arbitrum'],
   ['RFQ', 'Aggregated liquidity', 'No cold start'],
-  ['500+ PAIRS', 'Crypto & RWA', 'Long-tail markets'],
+  ['575+ MARKETS', 'Crypto & RWA', 'Derivatives listed'],
 ];
 
 const KAKEMONOS: { p: [number, number, number]; r: number; lines: string[]; theme: 'dark' | 'light' }[] = [
