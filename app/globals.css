@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/inter-latin-400-normal.woff') format('woff');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/inter-latin-700-normal.woff') format('woff');
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-800-normal.woff') format('woff');
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #f4f6fa;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Empêche la sélection de texte et le menu tactile pendant les glisser-caméra. */
+[data-world] {
+  touch-action: none;
+  user-select: none;
+}
