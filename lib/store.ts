@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { Vector3 } from 'three';
-import { DEFAULT_STAGE_VIDEO, type InteractiveId, type Lang } from './content';
+import type { InteractiveId, Lang } from './content';
 
 interface WorldState {
   lang: Lang;
@@ -11,7 +11,8 @@ interface WorldState {
   activeId: InteractiveId | null;
   /** Borne la plus proche à portée d'interaction. */
   nearbyId: InteractiveId | null;
-  stageVideoId: string;
+  /** Extrait diffusé sur l'écran de scène ; null = bannière d'attente du Summit. */
+  stageVideoId: string | null;
   toast: string | null;
   setLang: (lang: Lang) => void;
   setLoaded: (loaded: boolean) => void;
@@ -19,7 +20,7 @@ interface WorldState {
   open: (id: InteractiveId) => void;
   close: () => void;
   setNearby: (id: InteractiveId | null) => void;
-  setStageVideo: (id: string) => void;
+  setStageVideo: (id: string | null) => void;
   showToast: (message: string) => void;
 }
 
@@ -31,7 +32,7 @@ export const useWorld = create<WorldState>((set) => ({
   started: false,
   activeId: null,
   nearbyId: null,
-  stageVideoId: DEFAULT_STAGE_VIDEO,
+  stageVideoId: null,
   toast: null,
   setLang: (lang) => set({ lang }),
   setLoaded: (loaded) => set({ loaded }),

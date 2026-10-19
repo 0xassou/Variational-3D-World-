@@ -1,6 +1,5 @@
 'use client';
 
-import { Fragment } from 'react';
 import { Text } from '@react-three/drei';
 import { CuboidCollider, CylinderCollider, RigidBody } from '@react-three/rapier';
 import { CONTENT } from '@/lib/content';
@@ -8,7 +7,8 @@ import { BRAND, HALF_D, HALF_W, interactivePoint, TWITTER_WALL } from '@/lib/lay
 import { FONT_BOLD, FONT_REGULAR, FONT_SEMI } from './Hall';
 import { interactiveHandlers, Kiosk } from './Kiosk';
 import { Person } from './people';
-import { Plant } from './Stands';
+import { Armchair, BistroSet, CoffeeTable, Kakemono, Plant, PlanterBox, Sofa, Totem, type PlantKind } from './Decor';
+import { LogoPlane } from './Logo';
 
 /* ------------------------------------------------------------------ */
 /* Positions partagées avec la foule (Crowd.tsx)                        */
@@ -24,11 +24,41 @@ export const COCKTAIL_TABLES: [number, number][] = [
   [-6, 11],
   [6, 11],
   [12, 9],
+  [-10.5, -3.5],
+  [10.5, -3.5],
+  [-2.6, 12.5],
+  [2.6, 12.5],
 ];
 
-export const LOUNGES: [number, number][] = [
-  [-9, 21],
-  [9, 21],
+/** Tables hautes de discussion avec tabourets. */
+export const BISTRO_SETS: [number, number][] = [
+  [-17, -4],
+  [17, -4],
+  [-17, 11],
+  [17, 11],
+  [-7, -7.5],
+  [7, -7.5],
+];
+
+export interface LoungeLayout {
+  x: number;
+  z: number;
+}
+
+/** Salons (canapé + 2 fauteuils + table basse), orientés vers +Z. */
+export const LOUNGES: LoungeLayout[] = [
+  { x: -9, z: 21 },
+  { x: 9, z: 21 },
+  { x: -17, z: 25 },
+  { x: 17, z: 25 },
+];
+
+/** Places assises d'un salon, en coordonnées locales : [x, z, rotY]. */
+export const LOUNGE_SEATS: [number, number, number][] = [
+  [-0.8, -1.55, 0],
+  [0.8, -1.55, 0],
+  [-1.55, 0.75, Math.PI - 0.5],
+  [1.55, 0.75, Math.PI + 0.5],
 ];
 
 export const TOILETS = { minX: HALF_W - 9, maxX: HALF_W, minZ: HALF_D - 11, maxZ: HALF_D } as const;
@@ -66,33 +96,91 @@ function CocktailTable({ x, z }: { x: number; z: number }) {
   );
 }
 
-function Lounge({ x, z }: { x: number; z: number }) {
+function Lounge({ x, z }: LoungeLayout) {
   return (
     <group position={[x, 0, z]}>
       {/* Tapis */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]} receiveShadow>
-        <circleGeometry args={[3, 48]} />
-        <meshStandardMaterial color="#e8ebf2" roughness={1} />
+        <circleGeometry args={[2.9, 48]} />
+        <meshStandardMaterial color="#e6edf7" roughness={1} />
       </mesh>
-      {/* Canapés en L */}
-      <mesh position={[0, 0.25, -1.8]} castShadow receiveShadow>
-        <boxGeometry args={[3.6, 0.5, 0.9]} />
-        <meshStandardMaterial color="#cbd5e1" roughness={0.9} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.012, 0]}>
+        <ringGeometry args={[2.75, 2.9, 64]} />
+        <meshStandardMaterial color={BRAND.primary} roughness={1} />
       </mesh>
-      <mesh position={[0, 0.65, -2.15]} castShadow>
-        <boxGeometry args={[3.6, 0.5, 0.2]} />
-        <meshStandardMaterial color="#cbd5e1" roughness={0.9} />
-      </mesh>
-      <mesh position={[-1.8, 0.25, -0.4]} castShadow receiveShadow>
-        <boxGeometry args={[0.9, 0.5, 2]} />
-        <meshStandardMaterial color="#cbd5e1" roughness={0.9} />
-      </mesh>
-      {/* Table basse */}
-      <mesh position={[0, 0.2, -0.4]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.6, 0.6, 0.4, 32]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.3} />
-      </mesh>
-      <Plant position={[1.9, 0, -2]} scale={0.8} />
+      <Sofa position={[0, 0, LOUNGE_SEATS[0][1] - 0.05]} />
+      <Armchair position={[LOUNGE_SEATS[2][0], 0, LOUNGE_SEATS[2][1]]} rotationY={LOUNGE_SEATS[2][2]} />
+      <Armchair position={[LOUNGE_SEATS[3][0], 0, LOUNGE_SEATS[3][1]]} rotationY={LOUNGE_SEATS[3][2]} />
+      <CoffeeTable position={[0, 0, -0.35]} />
+      <Plant position={[2.1, 0, -1.9]} kind="tall" scale={0.9} />
+      <Plant position={[-2.1, 0, -1.9]} kind="snake" />
+    </group>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Mobilier central : totems, kakemonos, bacs végétalisés, plantes      */
+/* ------------------------------------------------------------------ */
+
+const TOTEM_FACES: string[][] = [
+  ['0% FEES', 'Spread-only model', 'Omni on Arbitrum'],
+  ['RFQ', 'Aggregated liquidity', 'No cold start'],
+  ['500+ PAIRS', 'Crypto & RWA', 'Long-tail markets'],
+];
+
+const KAKEMONOS: { p: [number, number, number]; r: number; lines: string[]; theme: 'dark' | 'light' }[] = [
+  { p: [-2.6, 0, -10.4], r: 0, lines: ['OMNI', 'Trade with 0% fees'], theme: 'dark' },
+  { p: [2.6, 0, -10.4], r: 0, lines: ['RFQ', 'Single fill, firm price'], theme: 'light' },
+  { p: [-5.2, 0, 26.5], r: 0, lines: ['WELCOME', 'Variational Summit'], theme: 'light' },
+  { p: [5.2, 0, 26.5], r: 0, lines: ['PRO', 'Institutional OTC'], theme: 'dark' },
+  { p: [2.4, 0, 39.2], r: Math.PI, lines: ['SUMMIT', 'Main hall · Stage A'], theme: 'dark' },
+  { p: [9.6, 0, 39.2], r: Math.PI, lines: ['ARBITRUM', 'Onchain settlement'], theme: 'light' },
+];
+
+function CentralDecor() {
+  return (
+    <group>
+      {/* Totems de marque au milieu du hall */}
+      <Totem position={[0, 0, 5]} faces={TOTEM_FACES} />
+      <Totem position={[-14, 0, -10]} rotationY={0.5} faces={[TOTEM_FACES[1], TOTEM_FACES[2], TOTEM_FACES[0]]} />
+      <Totem position={[14, 0, -10]} rotationY={-0.5} faces={[TOTEM_FACES[2], TOTEM_FACES[0], TOTEM_FACES[1]]} />
+
+      {KAKEMONOS.map((k) => (
+        <Kakemono key={k.lines[0]} position={k.p} rotationY={k.r} lines={k.lines} theme={k.theme} />
+      ))}
+
+      {/* Tables hautes et tabourets */}
+      {BISTRO_SETS.map(([x, z], i) => (
+        <BistroSet key={`${x}-${z}`} position={[x, 0, z]} stools={i % 2 ? 3 : 4} rotationY={i * 0.7} />
+      ))}
+
+      {/* Bacs végétalisés (séparateurs) */}
+      <PlanterBox position={[-4.6, 0, 29.5]} />
+      <PlanterBox position={[4.6, 0, 29.5]} />
+      <PlanterBox position={[-9, 0, 14.6]} length={3} />
+      <PlanterBox position={[9, 0, 14.6]} length={3} />
+      <PlanterBox position={[-20.5, 0, -27]} rotationY={Math.PI / 2} />
+      <PlanterBox position={[20.5, 0, -27]} rotationY={Math.PI / 2} />
+
+      {/* Plantes hautes le long des murs et autour des totems */}
+      {(
+        [
+          [-30.6, -40.4, 'tall'],
+          [30.6, -40.4, 'tall'],
+          [-30.6, 4, 'tall'],
+          [30.6, 4, 'tall'],
+          [-30.6, 23.5, 'tall'],
+          [30.6, 23.5, 'tall'],
+          [-1.4, 3.2, 'snake'],
+          [1.4, 6.8, 'snake'],
+          [-13.4, -12.4, 'bush'],
+          [13.4, -12.4, 'bush'],
+          [1.2, 40.6, 'bush'],
+          [10.9, 40.6, 'bush'],
+        ] as [number, number, PlantKind][]
+      ).map(([x, z, kind]) => (
+        <Plant key={`${x}-${z}`} position={[x, 0, z]} kind={kind} />
+      ))}
     </group>
   );
 }
@@ -228,10 +316,9 @@ function Restrooms() {
       <Text font={FONT_SEMI} position={[minX - 0.14, 2.6, minZ + 5.3]} rotation={[0, -Math.PI / 2, 0]} fontSize={0.3} color="#475569" anchorX="center" anchorY="middle">
         WC
       </Text>
-      <Plant position={[minX - 0.8, 0, minZ + 1]} scale={0.8} />
+      <Plant position={[minX - 0.8, 0, minZ + 1]} kind="snake" />
       <RigidBody type="fixed" colliders={false}>
         <CuboidCollider args={[(maxX - minX) / 2, h / 2, (maxZ - minZ) / 2]} position={[cx, h / 2, cz]} />
-        <CylinderCollider args={[0.5, 0.3]} position={[minX - 0.8, 0.5, minZ + 1]} />
       </RigidBody>
     </group>
   );
@@ -270,6 +357,7 @@ function CoffeeBar() {
       <Text font={FONT_BOLD} position={[-HALF_W + 0.08, 3.2, z]} rotation={[0, Math.PI / 2, 0]} fontSize={0.5} letterSpacing={0.1} color={BRAND.dark} anchorX="center" anchorY="middle">
         COFFEE · CAFÉ
       </Text>
+      <LogoPlane variant="onLight" width={2.6} position={[-HALF_W + 0.08, 4.1, z]} rotation={[0, Math.PI / 2, 0]} />
       <Person
         spec={{ position: [-HALF_W + 1.2, 0, z + 0.8], rotY: Math.PI / 2, pose: 'stand', shirt: BRAND.primary, skin: '#c68863', pants: '#1f2937', hair: '#1c1917' }}
         logo
@@ -291,10 +379,11 @@ export function Amenities() {
       {COCKTAIL_TABLES.map(([x, z]) => (
         <CocktailTable key={`${x}-${z}`} x={x} z={z} />
       ))}
-      {LOUNGES.map(([x, z]) => (
-        <Lounge key={`${x}-${z}`} x={x} z={z} />
+      {LOUNGES.map((l) => (
+        <Lounge key={`${l.x}-${l.z}`} {...l} />
       ))}
-      <Text font={FONT_SEMI} position={[0, 0.02, 6]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.6} letterSpacing={0.2} color="#cbd5e1" anchorX="center" anchorY="middle">
+      <CentralDecor />
+      <Text font={FONT_SEMI} position={[0, 0.02, 17.5]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.6} letterSpacing={0.2} color="#cbd5e1" anchorX="center" anchorY="middle">
         NETWORKING
       </Text>
       <TwitterWall />
@@ -303,14 +392,6 @@ export function Amenities() {
       <RigidBody type="fixed" colliders={false}>
         {COCKTAIL_TABLES.map(([x, z]) => (
           <CylinderCollider key={`ct-${x}-${z}`} args={[0.55, 0.45]} position={[x, 0.55, z]} />
-        ))}
-        {LOUNGES.map(([x, z]) => (
-          <Fragment key={`lc-${x}-${z}`}>
-            <CuboidCollider args={[1.8, 0.45, 0.55]} position={[x, 0.45, z - 1.9]} />
-            <CuboidCollider args={[0.45, 0.45, 1]} position={[x - 1.8, 0.45, z - 0.4]} />
-            <CylinderCollider args={[0.25, 0.6]} position={[x, 0.25, z - 0.4]} />
-            <CylinderCollider args={[0.5, 0.35]} position={[x + 1.9, 0.5, z - 2]} />
-          </Fragment>
         ))}
       </RigidBody>
     </group>
