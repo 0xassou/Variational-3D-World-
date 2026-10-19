@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { Vector3 } from 'three';
 import type { InteractiveId, Lang } from './content';
+import { fetchLiveMetrics, type MetricsData } from './metrics';
+import { METRICS_SNAPSHOT } from './metricsSnapshot';
 
 interface WorldState {
   lang: Lang;
@@ -14,6 +16,9 @@ interface WorldState {
   /** Extrait diffusé sur l'écran de scène ; null = bannière d'attente du Summit. */
   stageVideoId: string | null;
   toast: string | null;
+  metrics: MetricsData;
+  /** 'snapshot' = instantané embarqué, 'live' = API en direct, 'error' = API injoignable. */
+  metricsStatus: 'snapshot' | 'live' | 'error';
   setLang: (lang: Lang) => void;
   setLoaded: (loaded: boolean) => void;
   start: () => void;
@@ -22,6 +27,7 @@ interface WorldState {
   setNearby: (id: InteractiveId | null) => void;
   setStageVideo: (id: string | null) => void;
   showToast: (message: string) => void;
+  loadMetrics: () => Promise<void>;
 }
 
 let toastTimer: ReturnType<typeof setTimeout> | undefined;
@@ -34,6 +40,8 @@ export const useWorld = create<WorldState>((set) => ({
   nearbyId: null,
   stageVideoId: null,
   toast: null,
+  metrics: METRICS_SNAPSHOT,
+  metricsStatus: 'snapshot',
   setLang: (lang) => set({ lang }),
   setLoaded: (loaded) => set({ loaded }),
   start: () => set({ started: true }),
@@ -45,6 +53,14 @@ export const useWorld = create<WorldState>((set) => ({
     if (toastTimer) clearTimeout(toastTimer);
     set({ toast: message });
     toastTimer = setTimeout(() => set({ toast: null }), 2200);
+  },
+  loadMetrics: async () => {
+    try {
+      const metrics = await fetchLiveMetrics(METRICS_SNAPSHOT.openInterestHistory);
+      set({ metrics, metricsStatus: 'live' });
+    } catch {
+      set((s) => (s.metricsStatus === 'live' ? s : { metricsStatus: 'error' }));
+    }
   },
 }));
 

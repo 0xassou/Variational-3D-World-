@@ -3,10 +3,14 @@
 import { Text } from '@react-three/drei';
 import { CuboidCollider, CylinderCollider, RigidBody } from '@react-three/rapier';
 import { CONTENT } from '@/lib/content';
-import { BRAND, HALF_D, HALF_W, interactivePoint, TWITTER_WALL } from '@/lib/layout';
+import { t } from '@/lib/i18n';
+import { BRAND, interactivePoint, TWITTER_WALL } from '@/lib/layout';
+import { accessUrl, CEO_URL, openExternal, REFERRAL_CODE, VARIATIONAL_X } from '@/lib/links';
+import { useWorld } from '@/lib/store';
 import { FONT_BOLD, FONT_REGULAR, FONT_SEMI } from './Hall';
 import { interactiveHandlers, Kiosk } from './Kiosk';
-import { Person } from './people';
+import { Cafe } from './Cafe';
+import { Restrooms } from './Restrooms';
 import { Armchair, BistroSet, CoffeeTable, Kakemono, Plant, PlanterBox, Sofa, Totem, type PlantKind } from './Decor';
 import { LogoPlane } from './Logo';
 
@@ -61,8 +65,6 @@ export const LOUNGE_SEATS: [number, number, number][] = [
   [1.55, 0.75, Math.PI + 0.5],
 ];
 
-export const TOILETS = { minX: HALF_W - 9, maxX: HALF_W, minZ: HALF_D - 11, maxZ: HALF_D } as const;
-export const BAR = { x: -HALF_W + 3, z: 31, length: 5 } as const;
 
 /* ------------------------------------------------------------------ */
 /* Espace networking                                                    */
@@ -141,7 +143,6 @@ function CentralDecor() {
   return (
     <group>
       {/* Totems de marque au milieu du hall */}
-      <Totem position={[0, 0, 5]} faces={TOTEM_FACES} />
       <Totem position={[-14, 0, -10]} rotationY={0.5} faces={[TOTEM_FACES[1], TOTEM_FACES[2], TOTEM_FACES[0]]} />
       <Totem position={[14, 0, -10]} rotationY={-0.5} faces={[TOTEM_FACES[2], TOTEM_FACES[0], TOTEM_FACES[1]]} />
 
@@ -171,8 +172,6 @@ function CentralDecor() {
           [30.6, 4, 'tall'],
           [-30.6, 23.5, 'tall'],
           [30.6, 23.5, 'tall'],
-          [-1.4, 3.2, 'snake'],
-          [1.4, 6.8, 'snake'],
           [-13.4, -12.4, 'bush'],
           [13.4, -12.4, 'bush'],
           [1.2, 40.6, 'bush'],
@@ -188,6 +187,70 @@ function CentralDecor() {
 /* ------------------------------------------------------------------ */
 /* Twitter Alpha Wall                                                   */
 /* ------------------------------------------------------------------ */
+
+/** Bouton 3D du totem social : ouvre le lien si le joueur est à portée du mur. */
+function LinkButton({ y, label, sub, url, primary = false }: { y: number; label: string; sub: string; url: string; primary?: boolean }) {
+  return (
+    <group
+      position={[0, y, 0.09]}
+      onClick={(e) => {
+        e.stopPropagation();
+        if (e.delta > 6) return;
+        const { nearbyId, showToast, lang, activeId } = useWorld.getState();
+        if (activeId) return;
+        if (nearbyId === 'twitter') openExternal(url);
+        else showToast(t('tooFar', lang));
+      }}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        document.body.style.cursor = 'pointer';
+      }}
+      onPointerOut={() => {
+        document.body.style.cursor = '';
+      }}
+    >
+      <mesh>
+        <boxGeometry args={[1.56, 0.5, 0.06]} />
+        <meshStandardMaterial color={primary ? BRAND.primary : '#ffffff'} roughness={0.4} />
+      </mesh>
+      <Text font={FONT_BOLD} position={[0, 0.07, 0.035]} fontSize={0.12} color={primary ? '#ffffff' : '#0b1f3a'} anchorX="center" anchorY="middle" maxWidth={1.45}>
+        {label}
+      </Text>
+      <Text font={FONT_REGULAR} position={[0, -0.1, 0.035]} fontSize={0.075} color={primary ? '#e0efff' : '#475569'} anchorX="center" anchorY="middle" maxWidth={1.45}>
+        {sub}
+      </Text>
+    </group>
+  );
+}
+
+/** Totem « Follow & Access » : liens CEO, compte X officiel et accès direct au protocole. */
+function SocialTotem({ position }: { position: [number, number, number] }) {
+  return (
+    <group position={position} rotation={[0, Math.PI, 0]}>
+      <mesh position={[0, 1.75, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.9, 3.5, 0.14]} />
+        <meshStandardMaterial color={BRAND.dark} roughness={0.5} />
+      </mesh>
+      <mesh position={[0, 0.06, 0]}>
+        <boxGeometry args={[2.1, 0.12, 0.6]} />
+        <meshStandardMaterial color="#cbd5e1" metalness={0.5} roughness={0.3} />
+      </mesh>
+      <LogoPlane variant="onDark" width={1.5} position={[0, 3.15, 0.075]} />
+      <Text font={FONT_BOLD} position={[0, 2.78, 0.075]} fontSize={0.15} letterSpacing={0.15} color="#9cc8fb" anchorX="center" anchorY="middle">
+        FOLLOW & ACCESS
+      </Text>
+      <LinkButton y={2.3} label="Lucas Schuermann · CEO" sub={CEO_URL.url.replace(/^https?:\/\//, '').replace(/\/$/, '')} url={CEO_URL.url} />
+      <LinkButton y={1.7} label={`X ${VARIATIONAL_X.label}`} sub="Official account" url={VARIATIONAL_X.url} />
+      <LinkButton y={1.1} label="Trade on Omni →" sub={REFERRAL_CODE ? `ref: ${REFERRAL_CODE}` : 'omni.variational.io'} url={accessUrl()} primary />
+      <Text font={FONT_REGULAR} position={[0, 0.55, 0.075]} fontSize={0.07} color="#9fb6d6" anchorX="center" anchorY="middle" maxWidth={1.7} textAlign="center">
+        Click when near the wall · Not financial advice
+      </Text>
+      <RigidBody type="fixed" colliders={false}>
+        <CuboidCollider args={[1.05, 1.75, 0.3]} position={[0, 1.75, 0]} />
+      </RigidBody>
+    </group>
+  );
+}
 
 function TwitterWall() {
   const tweets = CONTENT.twitter.quotes;
@@ -218,6 +281,12 @@ function TwitterWall() {
           const y = 5.15 - row * (cardH + 0.3);
           return (
             <group key={tw.author} position={[x, y, 0.12]}>
+              {tw.author.includes('Joestar') && (
+                <mesh position={[0, 0, -0.005]}>
+                  <planeGeometry args={[cardW + 0.12, cardH + 0.12]} />
+                  <meshBasicMaterial color={BRAND.primary} toneMapped={false} />
+                </mesh>
+              )}
               <mesh>
                 <planeGeometry args={[cardW, cardH]} />
                 <meshStandardMaterial color="#f1f5f9" />
@@ -237,135 +306,9 @@ function TwitterWall() {
         })}
       </group>
       <Kiosk id="twitter" accent="#0f172a" label="Twitter Alpha Wall" position={[kiosk.x, 0, kiosk.z]} rotationY={Math.PI} />
+      <SocialTotem position={[TWITTER_WALL.x + TWITTER_WALL.width / 2 + 1.9, 0, TWITTER_WALL.z - 1.6]} />
       <RigidBody type="fixed" colliders={false}>
         <CuboidCollider args={[TWITTER_WALL.width / 2, 3.5, 0.2]} position={[TWITTER_WALL.x, 3.5, TWITTER_WALL.z]} />
-      </RigidBody>
-    </group>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Toilettes d'exposition                                               */
-/* ------------------------------------------------------------------ */
-
-function Pictogram({ kind, position }: { kind: 'man' | 'woman'; position: [number, number, number] }) {
-  return (
-    <group position={position} rotation={[0, -Math.PI / 2, 0]}>
-      <mesh>
-        <circleGeometry args={[0.32, 32]} />
-        <meshStandardMaterial color="#475569" />
-      </mesh>
-      <mesh position={[0, 0.12, 0.01]}>
-        <circleGeometry args={[0.06, 16]} />
-        <meshStandardMaterial color="#ffffff" />
-      </mesh>
-      {kind === 'man' ? (
-        <mesh position={[0, -0.08, 0.01]}>
-          <planeGeometry args={[0.12, 0.26]} />
-          <meshStandardMaterial color="#ffffff" />
-        </mesh>
-      ) : (
-        <mesh position={[0, -0.08, 0.01]}>
-          <circleGeometry args={[0.13, 3, Math.PI / 2]} />
-          <meshStandardMaterial color="#ffffff" />
-        </mesh>
-      )}
-    </group>
-  );
-}
-
-function Restrooms() {
-  const { minX, maxX, minZ, maxZ } = TOILETS;
-  const cx = (minX + maxX) / 2;
-  const cz = (minZ + maxZ) / 2;
-  const h = 3.2;
-  return (
-    <group>
-      {/* Façade côté hall */}
-      <mesh position={[minX, h / 2, cz]} castShadow receiveShadow>
-        <boxGeometry args={[0.25, h, maxZ - minZ]} />
-        <meshStandardMaterial color="#f8fafc" roughness={0.8} />
-      </mesh>
-      {/* Cloison côté sud */}
-      <mesh position={[cx, h / 2, minZ]} castShadow receiveShadow>
-        <boxGeometry args={[maxX - minX, h, 0.25]} />
-        <meshStandardMaterial color="#f8fafc" roughness={0.8} />
-      </mesh>
-      {/* Toit */}
-      <mesh position={[cx, h + 0.05, cz]} castShadow>
-        <boxGeometry args={[maxX - minX, 0.1, maxZ - minZ]} />
-        <meshStandardMaterial color="#e5e7eb" />
-      </mesh>
-      {/* Portes + pictogrammes */}
-      {[
-        { z: minZ + 3.2, kind: 'man' as const },
-        { z: minZ + 7.4, kind: 'woman' as const },
-      ].map((door) => (
-        <group key={door.kind}>
-          <mesh position={[minX - 0.13, 1.1, door.z]}>
-            <boxGeometry args={[0.04, 2.2, 1.1]} />
-            <meshStandardMaterial color="#cbd5e1" roughness={0.5} />
-          </mesh>
-          <mesh position={[minX - 0.16, 1.1, door.z + 0.38]}>
-            <boxGeometry args={[0.04, 0.05, 0.18]} />
-            <meshStandardMaterial color="#64748b" metalness={0.7} />
-          </mesh>
-          <Pictogram kind={door.kind} position={[minX - 0.14, 2.6, door.z]} />
-        </group>
-      ))}
-      <Text font={FONT_SEMI} position={[minX - 0.14, 2.6, minZ + 5.3]} rotation={[0, -Math.PI / 2, 0]} fontSize={0.3} color="#475569" anchorX="center" anchorY="middle">
-        WC
-      </Text>
-      <Plant position={[minX - 0.8, 0, minZ + 1]} kind="snake" />
-      <RigidBody type="fixed" colliders={false}>
-        <CuboidCollider args={[(maxX - minX) / 2, h / 2, (maxZ - minZ) / 2]} position={[cx, h / 2, cz]} />
-      </RigidBody>
-    </group>
-  );
-}
-
-/* ------------------------------------------------------------------ */
-/* Coffee bar                                                           */
-/* ------------------------------------------------------------------ */
-
-function CoffeeBar() {
-  const { x, z, length } = BAR;
-  return (
-    <group>
-      <mesh position={[x, 0.55, z]} castShadow receiveShadow>
-        <boxGeometry args={[1, 1.1, length]} />
-        <meshStandardMaterial color="#ffffff" roughness={0.35} />
-      </mesh>
-      <mesh position={[x + 0.51, 0.55, z]}>
-        <boxGeometry args={[0.02, 0.6, length - 0.4]} />
-        <meshStandardMaterial color={BRAND.primary} />
-      </mesh>
-      <mesh position={[x, 1.12, z]} castShadow>
-        <boxGeometry args={[1.1, 0.04, length + 0.1]} />
-        <meshStandardMaterial color="#e5e7eb" roughness={0.25} />
-      </mesh>
-      {/* Machine à café */}
-      <mesh position={[x - 0.15, 1.42, z - 1.4]} castShadow>
-        <boxGeometry args={[0.55, 0.55, 0.7]} />
-        <meshStandardMaterial color="#374151" metalness={0.6} roughness={0.3} />
-      </mesh>
-      {/* Étagère murale */}
-      <mesh position={[-HALF_W + 0.25, 2.2, z]} castShadow>
-        <boxGeometry args={[0.4, 0.05, length]} />
-        <meshStandardMaterial color="#e5e7eb" />
-      </mesh>
-      <Text font={FONT_BOLD} position={[-HALF_W + 0.08, 3.2, z]} rotation={[0, Math.PI / 2, 0]} fontSize={0.5} letterSpacing={0.1} color={BRAND.dark} anchorX="center" anchorY="middle">
-        COFFEE · CAFÉ
-      </Text>
-      <LogoPlane variant="onLight" width={2.6} position={[-HALF_W + 0.08, 4.1, z]} rotation={[0, Math.PI / 2, 0]} />
-      <Person
-        spec={{ position: [-HALF_W + 1.2, 0, z + 0.8], rotY: Math.PI / 2, pose: 'stand', shirt: BRAND.primary, skin: '#c68863', pants: '#1f2937', hair: '#1c1917' }}
-        logo
-        phase={4.2}
-      />
-      <RigidBody type="fixed" colliders={false}>
-        <CuboidCollider args={[0.55, 0.6, length / 2 + 0.05]} position={[x, 0.6, z]} />
-        <CylinderCollider args={[0.9, 0.3]} position={[-HALF_W + 1.2, 0.9, z + 0.8]} />
       </RigidBody>
     </group>
   );
@@ -388,7 +331,7 @@ export function Amenities() {
       </Text>
       <TwitterWall />
       <Restrooms />
-      <CoffeeBar />
+      <Cafe />
       <RigidBody type="fixed" colliders={false}>
         {COCKTAIL_TABLES.map(([x, z]) => (
           <CylinderCollider key={`ct-${x}-${z}`} args={[0.55, 0.45]} position={[x, 0.55, z]} />

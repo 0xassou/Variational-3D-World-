@@ -461,10 +461,11 @@ export function Stage() {
         </group>
       ))}
       {/* Bannière principale : logo officiel au-dessus de l'écran */}
+      {/* Le logo tient entre le haut de l'écran (12,65 m avec cadre) et le plafond (14 m). */}
       <LogoPlane
         variant="onLight"
-        width={10}
-        position={[0, STAGE.screenY + STAGE.screenHeight / 2 + 1.05, BACK_Z + 0.32]}
+        width={6}
+        position={[0, STAGE.screenY + STAGE.screenHeight / 2 + 0.75, BACK_Z + 0.32]}
       />
 
       <StageScreen />

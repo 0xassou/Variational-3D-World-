@@ -3,8 +3,9 @@
 import { useLayoutEffect, useMemo, useRef } from 'react';
 import { CuboidCollider, CylinderCollider, RigidBody } from '@react-three/rapier';
 import { BoxGeometry, InstancedMesh, Matrix4, Quaternion, Vector3 } from 'three';
-import { AUDIENCE, INTERACTIVE_POINTS, seededRandom, standCenterX, STANDS, TWITTER_WALL } from '@/lib/layout';
-import { BAR, BISTRO_SETS, COCKTAIL_TABLES, LOUNGE_SEATS, LOUNGES } from './Amenities';
+import { AUDIENCE, INTERACTIVE_POINTS, METRICS_STAND, seededRandom, standCenterX, STANDS, TWITTER_WALL } from '@/lib/layout';
+import { BISTRO_SETS, COCKTAIL_TABLES, LOUNGE_SEATS, LOUNGES } from './Amenities';
+import { CAFE_CUSTOMERS, CAFE_SEATS } from './Cafe';
 import {
   CrowdInstances,
   HAIR_COLORS,
@@ -99,6 +100,14 @@ function buildCrowd(): CrowdData {
     all.push(person([px, 0, pz], Math.atan2(bx - px, bz - pz), 'stand'));
   });
 
+  /* Visiteurs qui consultent les écrans du stand Live Metrics. */
+  for (const a of [Math.PI / 2.2, -Math.PI / 2.2, Math.PI * 0.85, -Math.PI * 0.8]) {
+    const r = METRICS_STAND.radius + 0.7;
+    const px = METRICS_STAND.x + Math.sin(a) * r;
+    const pz = METRICS_STAND.z + Math.cos(a) * r;
+    all.push(person([px, 0, pz], Math.atan2(METRICS_STAND.x - px, METRICS_STAND.z - pz), 'stand'));
+  }
+
   /* Visiteurs devant chaque stand (face au comptoir). */
   for (const s of STANDS) {
     const cx = standCenterX(s.side);
@@ -117,10 +126,11 @@ function buildCrowd(): CrowdData {
     all.push(person([TWITTER_WALL.x + dx, 0, TWITTER_WALL.z - 2.6 - rand() * 0.6], (rand() - 0.5) * 0.4, 'stand'));
   }
 
-  /* Clients du coffee bar (regardent vers le comptoir, -X). */
-  for (const dz of [-1.2, 1.4]) {
-    all.push(person([BAR.x + 1.3, 0, BAR.z + dz], -Math.PI / 2, 'stand'));
-  }
+  /* Clients du café : au comptoir et attablés. */
+  for (const [x, z, rot] of CAFE_CUSTOMERS) all.push(person([x, 0, z], rot, 'stand'));
+  CAFE_SEATS.forEach(([x, z, rot], i) => {
+    if (i !== 2) all.push(person([x, 0, z], rot, 'sit'));
+  });
 
   /* Petits groupes de discussion dispersés. */
   const pairs: [number, number][] = [
