@@ -11,8 +11,9 @@ export const FONT_BOLD = '/fonts/inter-latin-800-normal.woff';
 export const FONT_SEMI = '/fonts/inter-latin-700-normal.woff';
 export const FONT_REGULAR = '/fonts/inter-latin-400-normal.woff';
 
-const WALL_COLOR = '#f3f4f6';
-const TRIM_COLOR = '#e2e5ea';
+/* Palette gris-bleu mat (slate / light steel) : moins éblouissante, fait ressortir stands et éclairages. */
+const WALL_COLOR = '#c4cdd7';
+const TRIM_COLOR = '#97a3b1';
 
 /** Texture de carrelage clair (joints fins) générée sur canvas. */
 function useTileTexture() {
@@ -23,9 +24,9 @@ function useTileTexture() {
     canvas.height = size;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.fillStyle = '#f7f8fa';
+      ctx.fillStyle = '#bcc6d0';
       ctx.fillRect(0, 0, size, size);
-      ctx.strokeStyle = '#dfe3e8';
+      ctx.strokeStyle = '#a3afbc';
       ctx.lineWidth = 3;
       ctx.strokeRect(0, 0, size, size);
     }
@@ -48,14 +49,14 @@ function Floor() {
       <MeshReflectorMaterial
         map={tiles}
         color="#ffffff"
-        roughness={0.35}
+        roughness={0.62}
         metalness={0.05}
         blur={[400, 120]}
         resolution={512}
         mixBlur={1}
-        mixStrength={0.9}
+        mixStrength={0.45}
         mixContrast={1}
-        mirror={0.35}
+        mirror={0.12}
         depthScale={0.6}
         minDepthThreshold={0.6}
         maxDepthThreshold={1.3}
@@ -105,7 +106,7 @@ function Walls() {
       {[-1, 1].map((s) => (
         <mesh key={`band-${s}`} position={[s * (HALF_W - 0.05), h - 1.6, 0]}>
           <boxGeometry args={[0.1, 0.5, HALL.depth]} />
-          <meshStandardMaterial color="#e5e7eb" />
+          <meshStandardMaterial color="#aeb9c6" />
         </mesh>
       ))}
 
@@ -114,7 +115,7 @@ function Walls() {
         [-1, 1].map((s) => (
           <mesh key={`pilaster-${z}-${s}`} position={[s * (HALF_W - 0.35), h / 2, z]} castShadow receiveShadow>
             <boxGeometry args={[0.7, h, 1.2]} />
-            <meshStandardMaterial color="#fafafa" roughness={0.85} />
+            <meshStandardMaterial color="#d3dae2" roughness={0.85} />
           </mesh>
         )),
       )}
@@ -210,7 +211,7 @@ function Ceiling() {
     <group>
       <mesh position={[0, HALL.height, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <planeGeometry args={[HALL.width, HALL.depth]} />
-        <meshStandardMaterial color="#fbfbfc" roughness={1} />
+        <meshStandardMaterial color="#d5dbe2" roughness={1} />
       </mesh>
       {panels.map(([x, z]) => (
         <mesh key={`${x}-${z}`} position={[x, HALL.height - 0.02, z]} rotation={[Math.PI / 2, 0, 0]}>

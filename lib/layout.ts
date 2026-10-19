@@ -34,27 +34,48 @@ export const AUDIENCE = {
   innerX: 2.2,
 } as const;
 
-export type Side = 'left' | 'right';
+export type StandId = Exclude<InteractiveId, 'twitter' | 'stage' | 'metrics'>;
 
+/**
+ * Stand rectangulaire. Repère local : +X = façade (côté visiteurs), Z = largeur du stand.
+ * `rotY` oriente ce repère dans le hall ; `zs` (±1) choisit de quel côté de la façade se trouve la borne.
+ */
 export interface StandLayout {
-  id: Exclude<InteractiveId, 'twitter' | 'stage'>;
-  side: Side;
+  id: StandId;
+  x: number;
   z: number;
+  rotY: number;
+  zs: 1 | -1;
 }
-
-export const STANDS: StandLayout[] = [
-  { id: 'rfq', side: 'left', z: -6 },
-  { id: 'omni', side: 'left', z: 14 },
-  { id: 'pro', side: 'right', z: -6 },
-  { id: 'tokenomics', side: 'right', z: 14 },
-];
 
 export const STAND_SIZE = { width: 12, depth: 8 } as const;
 
-/** Position x du centre d'un stand (adossé au mur latéral). */
-export function standCenterX(side: Side): number {
-  const x = HALF_W - STAND_SIZE.depth / 2 - 0.5;
-  return side === 'left' ? -x : x;
+const WALL_X = HALF_W - STAND_SIZE.depth / 2 - 0.5;
+const BACK_Z = -HALF_D + STAND_SIZE.depth / 2 + 0.5;
+
+/**
+ * Parcours de visite : les stands produits (01 → 03, 05) longent l'allée depuis l'entrée,
+ * puis Tokenomics (04) et Vision (06) encadrent l'estrade au fond de la salle.
+ */
+export const STANDS: StandLayout[] = [
+  { id: 'rfq', x: -WALL_X, z: 14, rotY: 0, zs: 1 },
+  { id: 'omni', x: WALL_X, z: 14, rotY: Math.PI, zs: -1 },
+  { id: 'pro', x: -WALL_X, z: -6, rotY: 0, zs: 1 },
+  { id: 'swaps', x: WALL_X, z: -6, rotY: Math.PI, zs: -1 },
+  { id: 'tokenomics', x: -23, z: BACK_Z, rotY: -Math.PI / 2, zs: -1 },
+  { id: 'vision', x: 23, z: BACK_Z, rotY: -Math.PI / 2, zs: 1 },
+];
+
+/** Convertit un point du repère local d'un stand (x façade, z largeur) en coordonnées monde (x, z). */
+export function standToWorld(s: StandLayout, lx: number, lz: number): [number, number] {
+  const c = Math.cos(s.rotY);
+  const n = Math.sin(s.rotY);
+  return [s.x + lx * c + lz * n, s.z - lx * n + lz * c];
+}
+
+/** Position locale de la borne d'un stand (coin avant, côté `zs`). */
+export function standKioskLocal(s: StandLayout): [number, number] {
+  return [STAND_SIZE.depth / 2 - 0.2, 3.6 * s.zs];
 }
 
 /** Stand central « Live Metrics & Volume » (îlot circulaire). */
@@ -74,9 +95,8 @@ export interface InteractivePoint {
 /** Bornes interactives : distance de déclenchement mesurée sur le plan horizontal. */
 export const INTERACTIVE_POINTS: InteractivePoint[] = [
   ...STANDS.map((s) => {
-    const cx = standCenterX(s.side);
-    const dir = s.side === 'left' ? 1 : -1;
-    return { id: s.id, x: cx + dir * (STAND_SIZE.depth / 2 - 0.2), z: s.z + 3.6, radius: 6 };
+    const [x, z] = standToWorld(s, ...standKioskLocal(s));
+    return { id: s.id, x, z, radius: 6 };
   }),
   { id: 'metrics', x: METRICS_STAND.x, z: METRICS_STAND.z + METRICS_STAND.radius + 0.9, radius: 6 },
   { id: 'stage', x: 14.5, z: STAGE.z + STAGE.depth / 2 + 2.2, radius: 5 },

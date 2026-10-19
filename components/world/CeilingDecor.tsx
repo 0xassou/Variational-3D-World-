@@ -3,7 +3,7 @@
 import { useLayoutEffect, useMemo, useRef } from 'react';
 import { AdditiveBlending, BackSide, BoxGeometry, DoubleSide, InstancedMesh, Matrix4, Quaternion, Vector3 } from 'three';
 import { CONTENT } from '@/lib/content';
-import { BRAND, HALF_D, HALL, interactivePoint, METRICS_STAND, STAND_SIZE, standCenterX, STANDS } from '@/lib/layout';
+import { BRAND, HALF_D, HALL, interactivePoint, METRICS_STAND, STAND_SIZE, STANDS, standToWorld } from '@/lib/layout';
 import { LOUNGES } from './Amenities';
 import { getHangingSignTexture } from './brandTextures';
 
@@ -108,13 +108,13 @@ function Beams() {
       {[-30, -18, -6, 6, 18, 30].map((z) => (
         <mesh key={z} position={[0, H - 0.3, z]} castShadow>
           <boxGeometry args={[HALL.width, 0.6, 0.4]} />
-          <meshStandardMaterial color="#eef1f5" roughness={0.8} />
+          <meshStandardMaterial color="#bcc6d1" roughness={0.8} />
         </mesh>
       ))}
       {[-16, 16].map((x) => (
         <mesh key={x} position={[x, H - 0.2, 0]}>
           <boxGeometry args={[0.35, 0.4, HALL.depth]} />
-          <meshStandardMaterial color="#eef1f5" roughness={0.8} />
+          <meshStandardMaterial color="#bcc6d1" roughness={0.8} />
         </mesh>
       ))}
     </group>
@@ -225,18 +225,18 @@ export function CeilingDecor() {
       {/* Enseignes suspendues au-dessus des stands */}
       {STANDS.map((s) => {
         const c = CONTENT[s.id];
-        const dir = s.side === 'left' ? 1 : -1;
+        const [hx, hz] = standToWorld(s, STAND_SIZE.depth / 2 - 1.6, 0);
         return (
           <HangingSign
             key={s.id}
-            position={[standCenterX(s.side) + dir * (STAND_SIZE.depth / 2 - 1.6), 8.6, s.z]}
+            position={[hx, 8.6, hz]}
             title={c.signTitle}
             number={c.number ?? ''}
             accent={c.accent}
           />
         );
       })}
-      <HangingSign position={[METRICS_STAND.x, 7.6, METRICS_STAND.z]} title="Live Metrics" number="05" accent={BRAND.dark} />
+      <HangingSign position={[METRICS_STAND.x, 7.6, METRICS_STAND.z]} title="Live Metrics" number="LIVE" accent={BRAND.dark} />
       <HangingSign position={[stage.x + 2, 8.4, stage.z + 3]} title="Main Stage" number="★" accent={BRAND.primary} />
 
       {LOUNGES.map((l) => (

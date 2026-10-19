@@ -25,6 +25,8 @@ export interface MetricsData {
   /** Part du volume 24h réalisée sur des marchés RWA (0-1). */
   rwaVolumeShare: number;
   topMarkets: MarketRow[];
+  /** Marchés « Swap on … » (Variational Swaps TradFi) triés par volume 24h. */
+  swapMarkets: MarketRow[];
   /** [timestamp unix (s), open interest USD], un point par semaine. */
   openInterestHistory: [number, number][];
 }
@@ -90,6 +92,10 @@ export function parseStats(raw: RawStats, history: [number, number][]): MetricsD
     rwaMarkets: rows.filter((r) => r.rwa).length,
     rwaVolumeShare: totalVol ? rwaVol / totalVol : 0,
     topMarkets: [...rows].sort((a, b) => b.volume24h - a.volume24h).slice(0, 10),
+    swapMarkets: rows
+      .filter((r) => r.name.startsWith('Swap on'))
+      .sort((a, b) => b.volume24h - a.volume24h)
+      .slice(0, 12),
     openInterestHistory: history,
   };
 }
