@@ -1,14 +1,14 @@
 'use client';
 
-import { useRef, type ReactNode } from 'react';
+import { useMemo, useRef, type ReactNode } from 'react';
 import { useFrame, type ThreeEvent } from '@react-three/fiber';
-import { Text } from '@react-three/drei';
 import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import type { Group, Mesh, MeshStandardMaterial } from 'three';
 import type { InteractiveId } from '@/lib/content';
 import { t } from '@/lib/i18n';
 import { useWorld } from '@/lib/store';
-import { FONT_BOLD, FONT_SEMI } from './Hall';
+import { getKioskTexture } from './brandTextures';
+import { LogoPlane } from './Logo';
 
 /** Ouvre le modal si le joueur est à portée, sinon affiche un rappel. */
 export function tryInteract(id: InteractiveId) {
@@ -51,6 +51,7 @@ export function Kiosk({ id, accent, label, position, rotationY = 0 }: KioskProps
   const isNear = useWorld((s) => s.nearbyId === id);
   const marker = useRef<Group>(null);
   const ring = useRef<Mesh>(null);
+  const screenMap = useMemo(() => getKioskTexture(accent, label), [accent, label]);
 
   useFrame(({ clock }, dt) => {
     const time = clock.elapsedTime;
@@ -80,42 +81,22 @@ export function Kiosk({ id, accent, label, position, rotationY = 0 }: KioskProps
           <boxGeometry args={[0.5, 1.3, 0.3]} />
           <meshStandardMaterial color="#ffffff" roughness={0.35} />
         </mesh>
-        <mesh position={[0, 0.7, 0.152]}>
-          <boxGeometry args={[0.08, 1.2, 0.01]} />
+        <mesh position={[0, 0.45, 0.152]}>
+          <boxGeometry args={[0.08, 0.7, 0.01]} />
           <meshStandardMaterial color={accent} />
         </mesh>
-        {/* Écran incliné */}
+        {/* Logo sur la colonne */}
+        <LogoPlane variant="onLight" width={0.42} position={[0, 1.02, 0.156]} />
+        {/* Écran incliné avec visuel de marque */}
         <group position={[0, 1.42, 0.05]} rotation={[-0.45, 0, 0]}>
           <mesh castShadow>
             <boxGeometry args={[0.85, 0.58, 0.06]} />
             <meshStandardMaterial color="#1f2937" roughness={0.3} />
           </mesh>
           <mesh position={[0, 0, 0.032]}>
-            <planeGeometry args={[0.77, 0.5]} />
-            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.55} />
+            <planeGeometry args={[0.79, 0.525]} />
+            <meshBasicMaterial map={screenMap} toneMapped={false} />
           </mesh>
-          <Text
-            font={FONT_BOLD}
-            position={[0, 0.06, 0.036]}
-            fontSize={0.16}
-            color="#ffffff"
-            anchorX="center"
-            anchorY="middle"
-          >
-            i
-          </Text>
-          <Text
-            font={FONT_SEMI}
-            position={[0, -0.13, 0.036]}
-            fontSize={0.055}
-            maxWidth={0.7}
-            textAlign="center"
-            color="#ffffff"
-            anchorX="center"
-            anchorY="middle"
-          >
-            {label}
-          </Text>
         </group>
       </group>
 

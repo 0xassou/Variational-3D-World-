@@ -279,7 +279,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
   rfq: {
     id: 'rfq',
     number: '01',
-    accent: '#4f5bd5',
+    accent: '#4C9AF8',
     signTitle: 'RFQ Engine vs Orderbooks',
     title: {
       fr: 'Moteur RFQ vs Orderbooks',
@@ -684,7 +684,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
 
   stage: {
     id: 'stage',
-    accent: '#4f5bd5',
+    accent: '#4C9AF8',
     signTitle: 'Main Stage',
     title: {
       fr: 'Scène principale — Lucas Schuermann',
@@ -698,15 +698,15 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
     },
     beginner: {
       fr: [
-        'Choisis un extrait ci-dessous et clique sur « Diffuser sur l’écran » : il passe sur le grand écran de la scène (lecture muette automatique).',
+        'Par défaut, le grand écran affiche la bannière du Summit. Choisis un extrait ci-dessous et clique sur « Diffuser sur l’écran » pour le lancer (lecture muette automatique), puis « Arrêter » pour revenir à la bannière.',
         'Pour écouter avec le son, utilise « Regarder ici » ou ouvre la vidéo sur YouTube.',
       ],
       en: [
-        'Pick a clip below and click “Play on screen”: it runs on the big stage screen (muted autoplay).',
+        'By default the big screen shows the Summit banner. Pick a clip below and click “Play on screen” to start it (muted autoplay), then “Stop” to go back to the banner.',
         'To listen with sound, use “Watch here” or open the video on YouTube.',
       ],
       ko: [
-        '아래에서 클립을 선택하고 “스크린에서 재생”을 누르면 무대 대형 스크린에서 재생됩니다(음소거 자동 재생).',
+        '기본적으로 대형 스크린에는 Summit 배너가 표시됩니다. 아래에서 클립을 선택해 “스크린에서 재생”을 누르면 재생되고(음소거 자동 재생), “정지”를 누르면 배너로 돌아갑니다.',
         '소리와 함께 보려면 “여기서 보기”를 누르거나 YouTube에서 여세요.',
       ],
     },
@@ -746,5 +746,3 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
     },
   },
 };
-
-export const DEFAULT_STAGE_VIDEO = 'bankless-broker';

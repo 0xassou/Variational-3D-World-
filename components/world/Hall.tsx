@@ -5,6 +5,7 @@ import { MeshReflectorMaterial, Text } from '@react-three/drei';
 import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
 import { BRAND, HALF_D, HALF_W, HALL } from '@/lib/layout';
+import { LogoPlane } from './Logo';
 
 export const FONT_BOLD = '/fonts/inter-latin-800-normal.woff';
 export const FONT_SEMI = '/fonts/inter-latin-700-normal.woff';
@@ -128,25 +129,19 @@ function Walls() {
 
       {/* Signalétique murale */}
       {[-1, 1].map((s) => (
-        <Text
+        <LogoPlane
           key={`summit-${s}`}
-          font={FONT_BOLD}
-          position={[s * (HALF_W - 0.12), h - 3.4, 5]}
+          variant="onLight"
+          width={11}
+          position={[s * (HALF_W - 0.12), h - 3.3, 5]}
           rotation={[0, -s * (Math.PI / 2), 0]}
-          fontSize={1.3}
-          letterSpacing={0.08}
-          color={BRAND.dark}
-          anchorX="center"
-          anchorY="middle"
-        >
-          VARIATIONAL SUMMIT
-        </Text>
+        />
       ))}
       {[-1, 1].map((s) => (
         <Text
           key={`sub-${s}`}
           font={FONT_SEMI}
-          position={[s * (HALF_W - 0.12), h - 4.7, 5]}
+          position={[s * (HALF_W - 0.12), h - 4.9, 5]}
           rotation={[0, -s * (Math.PI / 2), 0]}
           fontSize={0.55}
           letterSpacing={0.12}
@@ -154,7 +149,7 @@ function Walls() {
           anchorX="center"
           anchorY="middle"
         >
-          OMNI · PRO · BUILT ON ARBITRUM
+          SUMMIT · OMNI · PRO · BUILT ON ARBITRUM
         </Text>
       ))}
 
@@ -168,16 +163,35 @@ function Walls() {
           <boxGeometry args={[3.8, 3.0, 0.04]} />
           <meshStandardMaterial color="#eaf2fb" roughness={0.1} metalness={0.2} />
         </mesh>
+        {/* Portique d'entrée aux couleurs de la marque */}
+        {[-1, 1].map((side) => (
+          <mesh key={side} position={[side * 2.5, 1.85, -0.2]} castShadow>
+            <boxGeometry args={[0.3, 3.7, 0.3]} />
+            <meshStandardMaterial color={BRAND.dark} roughness={0.6} />
+          </mesh>
+        ))}
+        <mesh position={[0, 4.05, -0.2]} castShadow>
+          <boxGeometry args={[5.3, 0.95, 0.3]} />
+          <meshStandardMaterial color={BRAND.dark} roughness={0.6} />
+        </mesh>
+        <LogoPlane variant="onDark" width={3.6} position={[0, 4.1, -0.36]} rotation={[0, Math.PI, 0]} />
         <Text
           font={FONT_SEMI}
-          position={[0, 3.6, -0.1]}
+          position={[0, 3.3, -0.1]}
           rotation={[0, Math.PI, 0]}
-          fontSize={0.32}
+          fontSize={0.26}
+          letterSpacing={0.1}
           color="#475569"
           anchorX="center"
+          anchorY="middle"
         >
-          ENTRANCE · ENTRÉE · 입구
+          ENTRANCE · ENTRÉE
         </Text>
+        <LogoPlane variant="onLight" width={8} position={[0, 7.2, -0.02]} rotation={[0, Math.PI, 0]} />
+        <RigidBody type="fixed" colliders={false}>
+          <CuboidCollider args={[0.15, 1.85, 0.15]} position={[-2.5, 1.85, -0.2]} />
+          <CuboidCollider args={[0.15, 1.85, 0.15]} position={[2.5, 1.85, -0.2]} />
+        </RigidBody>
       </group>
     </group>
   );

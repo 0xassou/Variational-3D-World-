@@ -5,7 +5,6 @@ import { useFrame } from '@react-three/fiber';
 import {
   BoxGeometry,
   BufferGeometry,
-  CanvasTexture,
   CapsuleGeometry,
   Color,
   Euler,
@@ -14,9 +13,9 @@ import {
   Matrix4,
   Quaternion,
   SphereGeometry,
-  SRGBColorSpace,
   Vector3,
 } from 'three';
+import { getShirtLogoTexture } from './brandTextures';
 
 /* ------------------------------------------------------------------ */
 /* Modèle de personnage low-poly partagé (foule instanciée, staff, PNJ) */
@@ -80,47 +79,6 @@ export const HAIR_COLORS = ['#1c1917', '#3b2416', '#6b4423', '#a16207', '#d6d3d1
 
 export function pick<T>(list: readonly T[], r: number): T {
   return list[Math.floor(r * list.length) % list.length];
-}
-
-/* ------------------------------------------------------------------ */
-/* Logo Variational (texture canvas générée, aucun asset externe)       */
-/* ------------------------------------------------------------------ */
-
-let logoTexture: CanvasTexture | null = null;
-
-/** Emblème « V » + wordmark, blanc sur transparent, utilisé sur les t-shirts. */
-export function getLogoTexture(): CanvasTexture {
-  if (logoTexture) return logoTexture;
-  const canvas = document.createElement('canvas');
-  canvas.width = 256;
-  canvas.height = 256;
-  const ctx = canvas.getContext('2d');
-  if (ctx) {
-    ctx.clearRect(0, 0, 256, 256);
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 26;
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.beginPath();
-    ctx.moveTo(62, 46);
-    ctx.lineTo(128, 168);
-    ctx.lineTo(194, 46);
-    ctx.stroke();
-    ctx.lineWidth = 12;
-    ctx.beginPath();
-    ctx.moveTo(98, 46);
-    ctx.lineTo(128, 104);
-    ctx.lineTo(158, 46);
-    ctx.stroke();
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 30px Inter, Arial, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('VARIATIONAL', 128, 226);
-  }
-  logoTexture = new CanvasTexture(canvas);
-  logoTexture.colorSpace = SRGBColorSpace;
-  logoTexture.anisotropy = 4;
-  return logoTexture;
 }
 
 /* ------------------------------------------------------------------ */
@@ -189,15 +147,18 @@ interface PersonProps {
   logo?: boolean;
   /** Décalage de phase pour désynchroniser les animations. */
   phase?: number;
+  /** Gestes du bras droit (intervenant qui parle). */
+  gesture?: boolean;
 }
 
-export function Person({ spec, animated = false, logo = false, phase = 0 }: PersonProps) {
+export function Person({ spec, animated = false, logo = false, phase = 0, gesture = false }: PersonProps) {
   const headRef = useRef<Group>(null);
   const bodyRef = useRef<Group>(null);
+  const armRef = useRef<Group>(null);
   const parts = PARTS[spec.pose];
   const pivotY = HEAD_PIVOT[spec.pose];
   const geometries = useMemo(() => parts.map((p) => p.geometry()), [parts]);
-  const logoMap = useMemo(() => (logo ? getLogoTexture() : null), [logo]);
+  const logoMap = useMemo(() => (logo ? getShirtLogoTexture() : null), [logo]);
 
   useLayoutEffect(() => () => geometries.forEach((g) => g.dispose()), [geometries]);
 
@@ -207,6 +168,12 @@ export function Person({ spec, animated = false, logo = false, phase = 0 }: Pers
       // Oscillation subtile : léger hochement + rotation latérale.
       headRef.current.rotation.y = Math.sin(t * 0.9) * 0.35;
       headRef.current.rotation.x = Math.sin(t * 1.7) * 0.08;
+    }
+    if (gesture && armRef.current) {
+      // Bras qui accompagne la parole : levées lentes et irrégulières.
+      const lift = Math.max(0, Math.sin(t * 1.3) + Math.sin(t * 2.1) * 0.5);
+      armRef.current.rotation.x = -lift * 0.55;
+      armRef.current.rotation.z = lift * 0.15;
     }
     if (spec.pose === 'stand' && bodyRef.current) {
       // Respiration très légère pour le staff.
@@ -219,13 +186,27 @@ export function Person({ spec, animated = false, logo = false, phase = 0 }: Pers
   return (
     <group position={spec.position} rotation={[0, spec.rotY, 0]}>
       <group ref={bodyRef}>
-        {parts.map((part, i) =>
-          part.head ? null : (
-            <mesh key={part.key} geometry={geometries[i]} position={part.offset} castShadow receiveShadow>
+        {parts.map((part, i) => {
+          if (part.head) return null;
+          const mesh = (
+            <mesh
+              key={part.key}
+              geometry={geometries[i]}
+              position={gesture && part.key === 'armR' ? [0, -0.24, 0] : part.offset}
+              castShadow
+              receiveShadow
+            >
               <meshStandardMaterial color={spec[part.slot]} roughness={0.8} />
             </mesh>
-          ),
-        )}
+          );
+          if (!(gesture && part.key === 'armR')) return mesh;
+          // Pivot à l'épaule pour animer le bras.
+          return (
+            <group key={part.key} ref={armRef} position={[part.offset[0], part.offset[1] + 0.24, part.offset[2]]}>
+              {mesh}
+            </group>
+          );
+        })}
         {logoMap && torso && (
           <mesh position={[torso.offset[0], torso.offset[1] + 0.08, torso.offset[2] + 0.214]}>
             <planeGeometry args={[0.26, 0.26]} />

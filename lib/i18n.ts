@@ -12,6 +12,7 @@ export const UI = {
   unverified: { fr: 'à recouper', en: 'to cross-check', ko: '교차 확인 필요' },
   playOnScreen: { fr: 'Diffuser sur l’écran', en: 'Play on screen', ko: '스크린에서 재생' },
   nowOnScreen: { fr: 'À l’écran', en: 'On screen', ko: '재생 중' },
+  stopScreen: { fr: 'Arrêter', en: 'Stop', ko: '정지' },
   watchHere: { fr: 'Regarder ici', en: 'Watch here', ko: '여기서 보기' },
   hideVideo: { fr: 'Masquer', en: 'Hide', ko: '숨기기' },
   openYoutube: { fr: 'YouTube', en: 'YouTube', ko: 'YouTube' },

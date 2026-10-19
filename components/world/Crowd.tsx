@@ -4,7 +4,7 @@ import { useLayoutEffect, useMemo, useRef } from 'react';
 import { CuboidCollider, CylinderCollider, RigidBody } from '@react-three/rapier';
 import { BoxGeometry, InstancedMesh, Matrix4, Quaternion, Vector3 } from 'three';
 import { AUDIENCE, INTERACTIVE_POINTS, seededRandom, standCenterX, STANDS, TWITTER_WALL } from '@/lib/layout';
-import { BAR, COCKTAIL_TABLES } from './Amenities';
+import { BAR, BISTRO_SETS, COCKTAIL_TABLES, LOUNGE_SEATS, LOUNGES } from './Amenities';
 import {
   CrowdInstances,
   HAIR_COLORS,
@@ -83,6 +83,22 @@ function buildCrowd(): CrowdData {
     }
   }
 
+  /* Personnes assises dans les salons (2 à 3 par salon). */
+  LOUNGES.forEach((l, li) => {
+    LOUNGE_SEATS.forEach(([sx, sz, rot], si) => {
+      if ((li + si) % 4 === 3) return; // une place libre par salon
+      all.push(person([l.x + sx, 0, l.z + sz], rot, 'sit'));
+    });
+  });
+
+  /* Discussions autour des tables hautes. */
+  BISTRO_SETS.forEach(([bx, bz], i) => {
+    const a = i * 1.9 + 0.8;
+    const px = bx + Math.sin(a) * 1.35;
+    const pz = bz + Math.cos(a) * 1.35;
+    all.push(person([px, 0, pz], Math.atan2(bx - px, bz - pz), 'stand'));
+  });
+
   /* Visiteurs devant chaque stand (face au comptoir). */
   for (const s of STANDS) {
     const cx = standCenterX(s.side);
@@ -109,10 +125,10 @@ function buildCrowd(): CrowdData {
   /* Petits groupes de discussion dispersés. */
   const pairs: [number, number][] = [
     [-17, 4],
-    [17, 24],
+    [13.5, 29],
     [-18, -20],
     [18, -16],
-    [-3.5, 27],
+    [-1.5, 22],
     [16, 5],
   ];
   for (const [gx, gz] of pairs) {
@@ -185,10 +201,10 @@ function Chairs({ seats }: { seats: Seat[] }) {
   return (
     <group>
       <instancedMesh ref={seatRef} args={[seatGeo, undefined, seats.length]} castShadow receiveShadow>
-        <meshStandardMaterial color="#4f5bd5" roughness={0.7} />
+        <meshStandardMaterial color="#2f6fc4" roughness={0.7} />
       </instancedMesh>
       <instancedMesh ref={backRef} args={[backGeo, undefined, seats.length]} castShadow receiveShadow>
-        <meshStandardMaterial color="#4f5bd5" roughness={0.7} />
+        <meshStandardMaterial color="#2f6fc4" roughness={0.7} />
       </instancedMesh>
       <instancedMesh ref={legRef} args={[legGeo, undefined, seats.length]} castShadow>
         <meshStandardMaterial color="#d1d5db" metalness={0.4} roughness={0.4} />

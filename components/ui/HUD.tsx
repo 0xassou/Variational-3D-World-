@@ -6,6 +6,7 @@ import { CONTENT } from '@/lib/content';
 import { t } from '@/lib/i18n';
 import { useWorld } from '@/lib/store';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { VariationalLogo } from './VariationalLogo';
 
 function Intro() {
   const lang = useWorld((s) => s.lang);
@@ -17,8 +18,8 @@ function Intro() {
       <div className="w-full max-w-lg rounded-2xl bg-white p-7 shadow-2xl ring-1 ring-slate-200">
         <div className="flex items-center justify-between gap-3">
           <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-brand-600">
+            <VariationalLogo className="h-5 w-auto" />
             <Presentation className="h-4 w-4" aria-hidden />
-            Variational · Arbitrum
           </span>
           <LanguageSwitcher compact />
         </div>
@@ -119,8 +120,8 @@ export function HUD() {
   return (
     <div className="pointer-events-none fixed inset-0 z-30 select-none">
       <div className="pointer-events-auto fixed left-4 top-4 flex items-center gap-2 rounded-full bg-white/90 py-1.5 pl-2 pr-4 shadow ring-1 ring-slate-200">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-500 text-sm font-black text-white">V</span>
-        <span className="text-sm font-bold text-slate-800">Variational Summit</span>
+        <VariationalLogo className="ml-1.5 h-4 w-auto" />
+        <span className="text-sm font-bold text-slate-800">Summit</span>
         <span className="hidden text-xs text-slate-400 sm:inline">· Omni & Pro on Arbitrum</span>
       </div>
       <div className="pointer-events-auto fixed right-4 top-4">

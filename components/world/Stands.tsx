@@ -4,33 +4,15 @@ import { Text } from '@react-three/drei';
 import { CuboidCollider, CylinderCollider, RigidBody } from '@react-three/rapier';
 import { CONTENT } from '@/lib/content';
 import { interactivePoint, STAND_SIZE, standCenterX, STANDS, type StandLayout } from '@/lib/layout';
-import { FONT_BOLD, FONT_REGULAR, FONT_SEMI } from './Hall';
+import { Plant } from './Decor';
+import { FONT_BOLD, FONT_REGULAR } from './Hall';
 import { interactiveHandlers, Kiosk } from './Kiosk';
+import { LogoPlane } from './Logo';
 import { Person, type PersonSpec } from './people';
 
 const W = STAND_SIZE.width; // le long du mur (axe z local)
 const D = STAND_SIZE.depth; // profondeur (axe x local, +x = vers le centre du hall)
 const BACK_X = -D / 2 + 0.15;
-
-/** Plante décorative en pot. */
-export function Plant({ position, scale = 1 }: { position: [number, number, number]; scale?: number }) {
-  return (
-    <group position={position} scale={scale}>
-      <mesh position={[0, 0.3, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.28, 0.22, 0.6, 20]} />
-        <meshStandardMaterial color="#f1f5f9" roughness={0.6} />
-      </mesh>
-      <mesh position={[0, 1.05, 0]} castShadow>
-        <sphereGeometry args={[0.48, 16, 12]} />
-        <meshStandardMaterial color="#6b9a72" roughness={0.9} />
-      </mesh>
-      <mesh position={[0.12, 1.45, 0.05]} castShadow>
-        <sphereGeometry args={[0.32, 14, 10]} />
-        <meshStandardMaterial color="#7fae84" roughness={0.9} />
-      </mesh>
-    </group>
-  );
-}
 
 /** Mini graphique décoratif (barres) sur un panneau du stand. */
 function ChartPanel({ accent, position, zs }: { accent: string; position: [number, number, number]; zs: number }) {
@@ -93,9 +75,7 @@ function Stand({ layout }: { layout: StandLayout }) {
           <Text font={FONT_BOLD} position={[zs * (W / 2 - 0.7), 4.75, 0]} fontSize={0.55} color="#ffffff" anchorX={zs > 0 ? 'right' : 'left'} anchorY="middle">
             {content.number ?? ''}
           </Text>
-          <Text font={FONT_SEMI} position={[zs * -(W / 2 - 0.6), 4.75, 0]} fontSize={0.28} letterSpacing={0.12} color="#ffffff" anchorX={zs > 0 ? 'left' : 'right'} anchorY="middle">
-            VARIATIONAL
-          </Text>
+          <LogoPlane variant="mono" width={2.6} position={[zs * -(W / 2 - 2), 4.75, 0.005]} />
           <Text font={FONT_BOLD} position={[0, 3.75, 0]} fontSize={0.62} maxWidth={W - 1.5} textAlign="center" color="#111827" anchorX="center" anchorY="middle">
             {content.signTitle}
           </Text>
@@ -140,9 +120,7 @@ function Stand({ layout }: { layout: StandLayout }) {
           <boxGeometry args={[0.02, 0.7, 3.0]} />
           <meshStandardMaterial color={accent} />
         </mesh>
-        <Text font={FONT_BOLD} position={[0.48, 0.55, 0]} rotation={[0, Math.PI / 2, 0]} fontSize={0.2} letterSpacing={0.1} color="#ffffff" anchorX="center" anchorY="middle">
-          VARIATIONAL
-        </Text>
+        <LogoPlane variant="mono" width={1.9} position={[0.48, 0.55, 0]} rotation={[0, Math.PI / 2, 0]} />
         <mesh position={[0, 1.12, 0]} castShadow>
           <boxGeometry args={[1.0, 0.04, 3.5]} />
           <meshStandardMaterial color="#e5e7eb" roughness={0.3} />
@@ -161,8 +139,8 @@ function Stand({ layout }: { layout: StandLayout }) {
         <Person key={i} spec={spec} logo phase={i * 1.3 + layout.z} />
       ))}
 
-      <Plant position={[-D / 2 + 0.7, 0, zs * (W / 2 - 0.7)]} />
-      <Plant position={[D / 2 - 0.6, 0, zs * -(W / 2 - 0.6)]} scale={0.85} />
+      <Plant position={[-D / 2 + 0.7, 0, zs * (W / 2 - 0.7)]} kind="tall" />
+      <Plant position={[D / 2 - 0.6, 0, zs * -(W / 2 - 0.6)]} kind="snake" />
 
       {/* Borne interactive (coordonnées locales déduites de la position monde) */}
       <Kiosk
@@ -181,8 +159,6 @@ function Stand({ layout }: { layout: StandLayout }) {
         {staff.map((s, i) => (
           <CylinderCollider key={i} args={[0.9, 0.3]} position={[s.position[0], 0.9, s.position[2]]} />
         ))}
-        <CylinderCollider args={[0.6, 0.35]} position={[-D / 2 + 0.7, 0.6, zs * (W / 2 - 0.7)]} />
-        <CylinderCollider args={[0.6, 0.3]} position={[D / 2 - 0.6, 0.6, zs * -(W / 2 - 0.6)]} />
       </RigidBody>
     </group>
   );

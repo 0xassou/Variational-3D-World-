@@ -98,7 +98,8 @@ export function seededRandom(seed: number): () => number {
 }
 
 export const BRAND = {
-  primary: '#4f5bd5',
-  dark: '#1c2157',
-  light: '#eef2ff',
+  /** Bleu officiel de l'emblème Variational. */
+  primary: '#4C9AF8',
+  dark: '#0b1f3a',
+  light: '#eaf3fe',
 } as const;

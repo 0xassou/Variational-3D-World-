@@ -10,6 +10,7 @@ import {
   GraduationCap,
   MonitorPlay,
   Quote as QuoteIcon,
+  Square,
   Table2,
   TriangleAlert,
   X,
@@ -27,6 +28,7 @@ import {
 import { t } from '@/lib/i18n';
 import { useWorld } from '@/lib/store';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { VariationalLogo } from './VariationalLogo';
 
 function Section({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
   return (
@@ -83,17 +85,25 @@ function VideoItem({ clip, lang }: { clip: VideoClip; lang: Lang }) {
           <p className="mt-0.5 text-xs text-slate-500">{clip.note[lang]}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setStageVideo(clip.id)}
-            disabled={onScreen}
-            className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
-              onScreen ? 'bg-emerald-100 text-emerald-700' : 'bg-brand-500 text-white hover:bg-brand-600'
-            }`}
-          >
-            <MonitorPlay className="h-3.5 w-3.5" aria-hidden />
-            {onScreen ? t('nowOnScreen', lang) : t('playOnScreen', lang)}
-          </button>
+          {onScreen ? (
+            <button
+              type="button"
+              onClick={() => setStageVideo(null)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-100 px-3 py-1.5 text-xs font-semibold text-emerald-800 transition hover:bg-emerald-200"
+            >
+              <Square className="h-3.5 w-3.5" aria-hidden />
+              {t('nowOnScreen', lang)} · {t('stopScreen', lang)}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setStageVideo(clip.id)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-600"
+            >
+              <MonitorPlay className="h-3.5 w-3.5" aria-hidden />
+              {t('playOnScreen', lang)}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setInline((v) => !v)}
@@ -330,7 +340,10 @@ export function Modal() {
               </span>
             )}
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Variational · Summit</p>
+              <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                <VariationalLogo className="h-3.5 w-auto" />
+                Summit
+              </p>
               <h2 id="modal-title" className="text-xl font-extrabold leading-tight text-slate-900 sm:text-2xl">
                 {content.title[lang]}
               </h2>
