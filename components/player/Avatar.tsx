@@ -42,13 +42,13 @@ export function Avatar({ motion }: { motion: RefObject<AvatarMotion> }) {
         { ref: legR, x: 0.1 },
       ].map(({ ref, x }) => (
         <group key={x} ref={ref} position={[x, 0.9, 0]}>
-          <mesh position={[0, -0.44, 0]} castShadow>
-            <boxGeometry args={[0.16, 0.86, 0.2]} />
+          <mesh position={[0, -0.43, 0]} castShadow>
+            <capsuleGeometry args={[0.076, 0.66, 4, 10]} />
             <meshStandardMaterial color={PANTS} roughness={0.8} />
           </mesh>
-          <mesh position={[0, -0.86, 0.06]} castShadow>
-            <boxGeometry args={[0.17, 0.08, 0.3]} />
-            <meshStandardMaterial color="#f8fafc" roughness={0.6} />
+          <mesh position={[0, -0.85, 0.05]} rotation={[Math.PI / 2, 0, 0]} castShadow>
+            <capsuleGeometry args={[0.055, 0.16, 4, 8]} />
+            <meshStandardMaterial color="#f8fafc" roughness={0.5} />
           </mesh>
         </group>
       ))}

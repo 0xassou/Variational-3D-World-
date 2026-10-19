@@ -159,7 +159,7 @@ export function PlanterBox({ position, rotationY = 0, length = 2.4 }: { position
 /* Tables hautes & tabourets                                            */
 /* ------------------------------------------------------------------ */
 
-export function BarStool({ position, rotationY = 0 }: { position: Vec3; rotationY?: number }) {
+export function BarStool({ position, rotationY = 0, seatColor = BRAND.dark }: { position: Vec3; rotationY?: number; seatColor?: string }) {
   return (
     <group position={position} rotation={[0, rotationY, 0]}>
       <mesh position={[0, 0.015, 0]} receiveShadow>
@@ -176,7 +176,7 @@ export function BarStool({ position, rotationY = 0 }: { position: Vec3; rotation
       </mesh>
       <mesh position={[0, 0.76, 0]} castShadow receiveShadow>
         <cylinderGeometry args={[0.2, 0.18, 0.07, 24]} />
-        <meshStandardMaterial color={BRAND.dark} roughness={0.7} />
+        <meshStandardMaterial color={seatColor} roughness={0.7} />
       </mesh>
     </group>
   );

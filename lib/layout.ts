@@ -18,9 +18,9 @@ export const STAGE = {
   width: 28,
   depth: 12,
   height: 1.2,
-  screenWidth: 18,
-  screenHeight: 10.125,
-  screenY: 8.2,
+  screenWidth: 16,
+  screenHeight: 9,
+  screenY: 7.9,
 } as const;
 
 /** Zone public assis devant la scène. */
@@ -57,6 +57,9 @@ export function standCenterX(side: Side): number {
   return side === 'left' ? -x : x;
 }
 
+/** Stand central « Live Metrics & Volume » (îlot circulaire). */
+export const METRICS_STAND = { x: 0, z: 4.5, radius: 3.8 } as const;
+
 export const TWITTER_WALL = { x: -12, z: HALF_D - 0.6, width: 16, height: 6.5 } as const;
 export const SPAWN: [number, number, number] = [0, 1.2, 33];
 
@@ -75,8 +78,11 @@ export const INTERACTIVE_POINTS: InteractivePoint[] = [
     const dir = s.side === 'left' ? 1 : -1;
     return { id: s.id, x: cx + dir * (STAND_SIZE.depth / 2 - 0.2), z: s.z + 3.6, radius: 6 };
   }),
+  { id: 'metrics', x: METRICS_STAND.x, z: METRICS_STAND.z + METRICS_STAND.radius + 0.9, radius: 6 },
   { id: 'stage', x: 14.5, z: STAGE.z + STAGE.depth / 2 + 2.2, radius: 5 },
   { id: 'twitter', x: TWITTER_WALL.x, z: TWITTER_WALL.z - 3.2, radius: 6 },
+  // Second point de déclenchement : totem « Follow & Access » à droite du mur.
+  { id: 'twitter', x: TWITTER_WALL.x + TWITTER_WALL.width / 2 + 1.9, z: TWITTER_WALL.z - 3.4, radius: 4 },
 ];
 
 export function interactivePoint(id: InteractiveId): InteractivePoint {

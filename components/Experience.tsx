@@ -8,9 +8,11 @@ import { HALL } from '@/lib/layout';
 import { useWorld } from '@/lib/store';
 import { Player } from './player/Player';
 import { Amenities } from './world/Amenities';
+import { CeilingDecor } from './world/CeilingDecor';
 import { Crowd } from './world/Crowd';
 import { Hall } from './world/Hall';
 import { Interaction } from './world/Interaction';
+import { MetricsStand } from './world/MetricsStand';
 import { Stage } from './world/Stage';
 import { Stands } from './world/Stands';
 
@@ -60,10 +62,14 @@ function Ready() {
 }
 
 export default function Experience() {
+  // Pause du rendu 3D pendant la lecture d'un pop-up : l'UI reste fluide, la scène est floutée derrière.
+  const paused = useWorld((s) => s.activeId !== null);
+
   return (
     <div data-world className="absolute inset-0 isolate">
       <Canvas
         shadows="soft"
+        frameloop={paused ? 'demand' : 'always'}
         dpr={[1, 1.75]}
         camera={{ fov: 55, near: 0.1, far: 220, position: [0, 6, 42] }}
         gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
@@ -79,6 +85,8 @@ export default function Experience() {
             <Hall />
             <Stage />
             <Stands />
+            <MetricsStand />
+            <CeilingDecor />
             <Amenities />
             <Crowd />
             <Player />

@@ -13,7 +13,7 @@ export const LANGS: Lang[] = ['fr', 'en', 'ko'];
 
 export type Localized<T = string> = Record<Lang, T>;
 
-export type InteractiveId = 'rfq' | 'omni' | 'pro' | 'tokenomics' | 'twitter' | 'stage';
+export type InteractiveId = 'rfq' | 'omni' | 'pro' | 'tokenomics' | 'metrics' | 'twitter' | 'stage';
 
 export interface Quote {
   text: string;
@@ -600,6 +600,68 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       en: ['Airdrop of roughly 32% of supply.', 'End of the points programme.', 'VAR ticker date.'],
       ko: ['공급량의 약 32% 에어드랍.', '포인트 프로그램 종료.', 'VAR 티커 일정.'],
     },
+  },
+
+  metrics: {
+    id: 'metrics',
+    number: '05',
+    accent: '#0b1f3a',
+    signTitle: 'Live Metrics & Volume',
+    title: {
+      fr: 'Live Metrics & Volume',
+      en: 'Live Metrics & Volume',
+      ko: '라이브 지표 & 거래량',
+    },
+    tagline: {
+      fr: 'Volume, open interest, TVL et marchés RWA/Perps, en direct.',
+      en: 'Volume, open interest, TVL and RWA/perps markets, live.',
+      ko: '거래량, 미결제약정, TVL, RWA/무기한 마켓을 실시간으로.',
+    },
+    beginner: {
+      fr: [
+        'Volume 24h : la valeur totale des trades exécutés sur les dernières 24 heures.',
+        'Open interest (OI) : la valeur totale des positions encore ouvertes. Il mesure l’exposition réelle des traders.',
+        'TVL : les fonds déposés sur le protocole (pools de settlement et OLP).',
+        'Les chiffres du tableau de bord sont chargés en direct depuis l’API publique de Variational et DefiLlama ; un instantané daté s’affiche si le réseau est indisponible.',
+      ],
+      en: [
+        '24h volume: the total value of trades executed over the last 24 hours.',
+        'Open interest (OI): the total value of positions still open. It measures traders’ real exposure.',
+        'TVL: the funds deposited in the protocol (settlement pools and OLP).',
+        'Dashboard figures are loaded live from the public Variational API and DefiLlama; a dated snapshot is shown if the network is unavailable.',
+      ],
+      ko: [
+        '24시간 거래량: 지난 24시간 동안 체결된 거래의 총 가치입니다.',
+        '미결제약정(OI): 아직 열려 있는 포지션의 총 가치로, 트레이더의 실제 노출을 보여줍니다.',
+        'TVL: 프로토콜(정산 풀과 OLP)에 예치된 자금입니다.',
+        '대시보드 수치는 Variational 공개 API와 DefiLlama에서 실시간으로 불러오며, 네트워크를 사용할 수 없으면 날짜가 표시된 스냅샷을 보여줍니다.',
+      ],
+    },
+    deepTech: {
+      fr: [
+        'Les marchés RWA (indices, matières premières, devises, actions, pré-IPO) sont repérés par une heuristique sur le nom du marché ; le classement est indicatif.',
+        'L’open interest historique vient de DefiLlama (un point par semaine) ; le volume et la TVL viennent de l’API Variational.',
+        'Les graphiques DefiLlama Research (volume, OI, listings) couvrent la période du 24 janvier au 4 juin 2026.',
+      ],
+      en: [
+        'RWA markets (indices, commodities, FX, equities, pre-IPO) are detected with a heuristic on the market name; the split is indicative.',
+        'Historical open interest comes from DefiLlama (one point per week); volume and TVL come from the Variational API.',
+        'DefiLlama Research charts (volume, OI, listings) cover 24 January to 4 June 2026.',
+      ],
+      ko: [
+        'RWA 마켓(지수, 원자재, 외환, 주식, 프리IPO)은 마켓 이름 기반 휴리스틱으로 분류하므로 참고용입니다.',
+        '과거 미결제약정은 DefiLlama(주 1회 데이터)에서, 거래량과 TVL은 Variational API에서 가져옵니다.',
+        'DefiLlama Research 차트(거래량, OI, 상장 수)는 2026년 1월 24일부터 6월 4일까지를 다룹니다.',
+      ],
+    },
+    quotes: [],
+    videoIds: [],
+    sources: [
+      { label: 'Variational API — /metadata/stats', url: 'https://omni-client-api.prod.ap-northeast-1.variational.io/metadata/stats' },
+      { label: 'DefiLlama — Variational open interest', url: 'https://defillama.com/protocol/variational' },
+      { label: 'DefiLlama Research — Variational report', url: DEFILLAMA_REPORT },
+      { label: 'Omni — markets list', url: 'https://omni.variational.io/markets' },
+    ],
   },
 
   twitter: {

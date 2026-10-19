@@ -3,9 +3,9 @@
 import { useLayoutEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import {
-  BoxGeometry,
   BufferGeometry,
   CapsuleGeometry,
+  CylinderGeometry,
   Color,
   Euler,
   Group,
@@ -22,7 +22,7 @@ import { getShirtLogoTexture } from './brandTextures';
 /* ------------------------------------------------------------------ */
 
 export type Pose = 'stand' | 'sit';
-type ColorSlot = 'shirt' | 'skin' | 'pants' | 'hair';
+type ColorSlot = 'shirt' | 'skin' | 'pants' | 'hair' | 'shoe';
 
 export interface PersonSpec {
   position: [number, number, number];
@@ -35,39 +35,80 @@ export interface PersonSpec {
   hair: string;
 }
 
+type Vec3 = [number, number, number];
+
 interface PartDef {
   key: string;
   geometry: () => BufferGeometry;
-  offset: [number, number, number];
+  offset: Vec3;
+  rotation?: Vec3;
+  scale?: Vec3;
   slot: ColorSlot;
   /** Partie appartenant à la tête (animée chez certains PNJ). */
   head?: boolean;
 }
 
-const HEAD_PIVOT: Record<Pose, number> = { stand: 1.5, sit: 1.26 };
+const SHOE_COLOR = '#1f2328';
 
-const TORSO = () => new CapsuleGeometry(0.21, 0.4, 4, 12);
-const ARM = () => new CapsuleGeometry(0.065, 0.42, 4, 8);
-const HEAD = () => new SphereGeometry(0.13, 16, 12);
-const HAIR = () => new SphereGeometry(0.137, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2);
+function colorOf(p: PersonSpec, slot: ColorSlot) {
+  return slot === 'shoe' ? SHOE_COLOR : p[slot];
+}
+
+const HEAD_PIVOT: Record<Pose, number> = { stand: 1.48, sit: 1.16 };
+
+/* Géométries stylisées partagées (silhouette arrondie, proportions homogènes). */
+const TORSO = () => new CylinderGeometry(0.205, 0.155, 0.5, 18, 1);
+const SHOULDER = () => new SphereGeometry(0.085, 14, 10);
+const PELVIS = () => new SphereGeometry(1, 16, 10);
+const LIMB_LEG = () => new CapsuleGeometry(0.072, 0.62, 4, 10);
+const THIGH = () => new CapsuleGeometry(0.078, 0.34, 4, 10);
+const SHIN = () => new CapsuleGeometry(0.066, 0.32, 4, 10);
+const ARM = () => new CapsuleGeometry(0.054, 0.44, 4, 10);
+const HAND = () => new SphereGeometry(0.05, 10, 8);
+const NECK = () => new CylinderGeometry(0.048, 0.055, 0.1, 10);
+const HEAD = () => new SphereGeometry(0.118, 20, 16);
+const HAIR = () => new SphereGeometry(0.126, 20, 10, 0, Math.PI * 2, 0, Math.PI / 1.85);
+const SHOE = () => new CapsuleGeometry(0.052, 0.14, 4, 8);
+
+/** Torse aplati en profondeur (épaules larges, taille fine). */
+const TORSO_SCALE: Vec3 = [1, 1, 0.68];
 
 const PARTS: Record<Pose, PartDef[]> = {
   stand: [
-    { key: 'legs', geometry: () => new BoxGeometry(0.36, 0.86, 0.22), offset: [0, 0.43, 0], slot: 'pants' },
-    { key: 'torso', geometry: TORSO, offset: [0, 1.15, 0], slot: 'shirt' },
-    { key: 'armL', geometry: ARM, offset: [-0.275, 1.12, 0], slot: 'shirt' },
-    { key: 'armR', geometry: ARM, offset: [0.275, 1.12, 0], slot: 'shirt' },
-    { key: 'head', geometry: HEAD, offset: [0, 1.62, 0], slot: 'skin', head: true },
-    { key: 'hair', geometry: HAIR, offset: [0, 1.645, -0.005], slot: 'hair', head: true },
+    { key: 'shoeL', geometry: SHOE, offset: [-0.1, 0.05, 0.04], rotation: [Math.PI / 2, 0, 0], slot: 'shoe' },
+    { key: 'shoeR', geometry: SHOE, offset: [0.1, 0.05, 0.04], rotation: [Math.PI / 2, 0, 0], slot: 'shoe' },
+    { key: 'legL', geometry: LIMB_LEG, offset: [-0.1, 0.46, 0], slot: 'pants' },
+    { key: 'legR', geometry: LIMB_LEG, offset: [0.1, 0.46, 0], slot: 'pants' },
+    { key: 'pelvis', geometry: PELVIS, offset: [0, 0.88, 0], scale: [0.19, 0.1, 0.13], slot: 'pants' },
+    { key: 'torso', geometry: TORSO, offset: [0, 1.16, 0], scale: TORSO_SCALE, slot: 'shirt' },
+    { key: 'shoulderL', geometry: SHOULDER, offset: [-0.2, 1.37, 0], slot: 'shirt' },
+    { key: 'shoulderR', geometry: SHOULDER, offset: [0.2, 1.37, 0], slot: 'shirt' },
+    { key: 'armL', geometry: ARM, offset: [-0.255, 1.1, 0], rotation: [0, 0, -0.07], slot: 'shirt' },
+    { key: 'armR', geometry: ARM, offset: [0.255, 1.1, 0], rotation: [0, 0, 0.07], slot: 'shirt' },
+    { key: 'handL', geometry: HAND, offset: [-0.275, 0.82, 0.01], slot: 'skin' },
+    { key: 'handR', geometry: HAND, offset: [0.275, 0.82, 0.01], slot: 'skin' },
+    { key: 'neck', geometry: NECK, offset: [0, 1.45, 0], slot: 'skin' },
+    { key: 'head', geometry: HEAD, offset: [0, 1.6, 0.005], scale: [1, 1.08, 1.02], slot: 'skin', head: true },
+    { key: 'hair', geometry: HAIR, offset: [0, 1.625, -0.006], slot: 'hair', head: true },
   ],
   sit: [
-    { key: 'thighs', geometry: () => new BoxGeometry(0.36, 0.17, 0.5), offset: [0, 0.54, 0.18], slot: 'pants' },
-    { key: 'shins', geometry: () => new BoxGeometry(0.34, 0.48, 0.16), offset: [0, 0.24, 0.42], slot: 'pants' },
-    { key: 'torso', geometry: TORSO, offset: [0, 0.92, -0.02], slot: 'shirt' },
-    { key: 'armL', geometry: ARM, offset: [-0.275, 0.9, 0.02], slot: 'shirt' },
-    { key: 'armR', geometry: ARM, offset: [0.275, 0.9, 0.02], slot: 'shirt' },
-    { key: 'head', geometry: HEAD, offset: [0, 1.38, -0.02], slot: 'skin', head: true },
-    { key: 'hair', geometry: HAIR, offset: [0, 1.405, -0.025], slot: 'hair', head: true },
+    { key: 'shoeL', geometry: SHOE, offset: [-0.1, 0.05, 0.5], rotation: [Math.PI / 2, 0, 0], slot: 'shoe' },
+    { key: 'shoeR', geometry: SHOE, offset: [0.1, 0.05, 0.5], rotation: [Math.PI / 2, 0, 0], slot: 'shoe' },
+    { key: 'shinL', geometry: SHIN, offset: [-0.1, 0.27, 0.42], slot: 'pants' },
+    { key: 'shinR', geometry: SHIN, offset: [0.1, 0.27, 0.42], slot: 'pants' },
+    { key: 'thighL', geometry: THIGH, offset: [-0.1, 0.52, 0.2], rotation: [Math.PI / 2, 0, 0], slot: 'pants' },
+    { key: 'thighR', geometry: THIGH, offset: [0.1, 0.52, 0.2], rotation: [Math.PI / 2, 0, 0], slot: 'pants' },
+    { key: 'pelvis', geometry: PELVIS, offset: [0, 0.54, -0.02], scale: [0.19, 0.1, 0.14], slot: 'pants' },
+    { key: 'torso', geometry: TORSO, offset: [0, 0.83, -0.03], scale: TORSO_SCALE, slot: 'shirt' },
+    { key: 'shoulderL', geometry: SHOULDER, offset: [-0.2, 1.04, -0.03], slot: 'shirt' },
+    { key: 'shoulderR', geometry: SHOULDER, offset: [0.2, 1.04, -0.03], slot: 'shirt' },
+    { key: 'armL', geometry: ARM, offset: [-0.245, 0.83, 0.07], rotation: [-0.55, 0, -0.05], slot: 'shirt' },
+    { key: 'armR', geometry: ARM, offset: [0.245, 0.83, 0.07], rotation: [-0.55, 0, 0.05], slot: 'shirt' },
+    { key: 'handL', geometry: HAND, offset: [-0.21, 0.6, 0.24], slot: 'skin' },
+    { key: 'handR', geometry: HAND, offset: [0.21, 0.6, 0.24], slot: 'skin' },
+    { key: 'neck', geometry: NECK, offset: [0, 1.12, -0.03], slot: 'skin' },
+    { key: 'head', geometry: HEAD, offset: [0, 1.27, -0.025], scale: [1, 1.08, 1.02], slot: 'skin', head: true },
+    { key: 'hair', geometry: HAIR, offset: [0, 1.295, -0.031], slot: 'hair', head: true },
   ],
 };
 
@@ -88,9 +129,10 @@ export function pick<T>(list: readonly T[], r: number): T {
 const tmpMatrix = new Matrix4();
 const tmpPos = new Vector3();
 const tmpQuat = new Quaternion();
+const tmpPartQuat = new Quaternion();
 const tmpEuler = new Euler();
 const tmpOffset = new Vector3();
-const unitScale = new Vector3(1, 1, 1);
+const tmpScale = new Vector3();
 const tmpColor = new Color();
 
 function InstancedPart({ part, people }: { part: PartDef; people: PersonSpec[] }) {
@@ -100,14 +142,15 @@ function InstancedPart({ part, people }: { part: PartDef; people: PersonSpec[] }
   useLayoutEffect(() => {
     const mesh = ref.current;
     if (!mesh) return;
+    tmpPartQuat.setFromEuler(tmpEuler.set(...(part.rotation ?? [0, 0, 0])));
+    tmpScale.set(...(part.scale ?? [1, 1, 1]));
     people.forEach((p, i) => {
-      tmpEuler.set(0, p.rotY, 0);
-      tmpQuat.setFromEuler(tmpEuler);
+      tmpQuat.setFromEuler(tmpEuler.set(0, p.rotY, 0));
       tmpOffset.set(...part.offset).applyQuaternion(tmpQuat);
       tmpPos.set(...p.position).add(tmpOffset);
-      tmpMatrix.compose(tmpPos, tmpQuat, unitScale);
+      tmpMatrix.compose(tmpPos, tmpQuat.multiply(tmpPartQuat), tmpScale);
       mesh.setMatrixAt(i, tmpMatrix);
-      mesh.setColorAt(i, tmpColor.set(p[part.slot]));
+      mesh.setColorAt(i, tmpColor.set(colorOf(p, part.slot)));
     });
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
@@ -119,12 +162,12 @@ function InstancedPart({ part, people }: { part: PartDef; people: PersonSpec[] }
   if (people.length === 0) return null;
   return (
     <instancedMesh ref={ref} args={[geometry, undefined, people.length]} castShadow receiveShadow>
-      <meshStandardMaterial roughness={part.slot === 'skin' ? 0.6 : 0.85} />
+      <meshStandardMaterial roughness={part.slot === 'skin' ? 0.55 : part.slot === 'shoe' ? 0.4 : 0.8} />
     </instancedMesh>
   );
 }
 
-/** Rend une foule statique d'une même pose avec ~7 draw calls quel que soit le nombre de PNJ. */
+/** Rend une foule statique d'une même pose (un draw call par partie du corps, quel que soit le nombre de PNJ). */
 export function CrowdInstances({ people, pose }: { people: PersonSpec[]; pose: Pose }) {
   return (
     <group>
@@ -182,34 +225,37 @@ export function Person({ spec, animated = false, logo = false, phase = 0, gestur
   });
 
   const torso = parts.find((p) => p.key === 'torso');
+  const armR = parts.find((p) => p.key === 'armR');
+  // Pivot d'épaule du bras droit animé (intervenant qui parle).
+  const shoulder: Vec3 = armR ? [armR.offset[0], armR.offset[1] + 0.24, armR.offset[2]] : [0, 0, 0];
+  const gestureKeys = gesture ? ['armR', 'handR'] : [];
+
+  const renderPart = (part: PartDef, i: number, origin: Vec3 = [0, 0, 0]) => (
+    <mesh
+      key={part.key}
+      geometry={geometries[i]}
+      position={[part.offset[0] - origin[0], part.offset[1] - origin[1], part.offset[2] - origin[2]]}
+      rotation={part.rotation}
+      scale={part.scale}
+      castShadow
+      receiveShadow
+    >
+      <meshStandardMaterial color={colorOf(spec, part.slot)} roughness={part.slot === 'skin' ? 0.55 : 0.8} />
+    </mesh>
+  );
 
   return (
     <group position={spec.position} rotation={[0, spec.rotY, 0]}>
       <group ref={bodyRef}>
-        {parts.map((part, i) => {
-          if (part.head) return null;
-          const mesh = (
-            <mesh
-              key={part.key}
-              geometry={geometries[i]}
-              position={gesture && part.key === 'armR' ? [0, -0.24, 0] : part.offset}
-              castShadow
-              receiveShadow
-            >
-              <meshStandardMaterial color={spec[part.slot]} roughness={0.8} />
-            </mesh>
-          );
-          if (!(gesture && part.key === 'armR')) return mesh;
-          // Pivot à l'épaule pour animer le bras.
-          return (
-            <group key={part.key} ref={armRef} position={[part.offset[0], part.offset[1] + 0.24, part.offset[2]]}>
-              {mesh}
-            </group>
-          );
-        })}
+        {parts.map((part, i) => (part.head || gestureKeys.includes(part.key) ? null : renderPart(part, i)))}
+        {gesture && (
+          <group ref={armRef} position={shoulder}>
+            {parts.map((part, i) => (gestureKeys.includes(part.key) ? renderPart(part, i, shoulder) : null))}
+          </group>
+        )}
         {logoMap && torso && (
-          <mesh position={[torso.offset[0], torso.offset[1] + 0.08, torso.offset[2] + 0.214]}>
-            <planeGeometry args={[0.26, 0.26]} />
+          <mesh position={[torso.offset[0], torso.offset[1] + 0.08, torso.offset[2] + 0.134]}>
+            <planeGeometry args={[0.22, 0.22]} />
             <meshStandardMaterial map={logoMap} transparent roughness={0.7} polygonOffset polygonOffsetFactor={-1} />
           </mesh>
         )}
@@ -221,9 +267,11 @@ export function Person({ spec, animated = false, logo = false, phase = 0, gestur
               key={part.key}
               geometry={geometries[i]}
               position={[part.offset[0], part.offset[1] - pivotY, part.offset[2]]}
+              rotation={part.rotation}
+              scale={part.scale}
               castShadow
             >
-              <meshStandardMaterial color={spec[part.slot]} roughness={0.6} />
+              <meshStandardMaterial color={colorOf(spec, part.slot)} roughness={0.55} />
             </mesh>
           ) : null,
         )}

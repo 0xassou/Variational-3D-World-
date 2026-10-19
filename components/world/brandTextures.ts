@@ -1,4 +1,4 @@
-import { CanvasTexture, SRGBColorSpace } from 'three';
+import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
 import { BRAND_BLUE, EMBLEM_PATH, LOGO_VIEWBOX, WORDMARK_PATHS, type LogoPath } from '@/lib/brand';
 
 /* ------------------------------------------------------------------ */
@@ -125,11 +125,11 @@ export function getLogoTexture(variant: LogoVariant): CanvasTexture {
 
 /** Logo empilé (emblème au-dessus du wordmark) pour le torse des t-shirts du staff. */
 export function getShirtLogoTexture(): CanvasTexture {
-  return makeTexture('shirt', 256, 256, (ctx) => {
-    const emblemH = 112;
-    drawEmblem(ctx, 128 - (emblemH * EMBLEM_ASPECT) / 2, 28, emblemH, '#ffffff');
-    const wordH = 34;
-    drawWordmark(ctx, 128 - (wordH * WORDMARK_ASPECT) / 2, 168, wordH, '#ffffff');
+  return makeTexture('shirt', 512, 512, (ctx) => {
+    const emblemH = 228;
+    drawEmblem(ctx, 256 - (emblemH * EMBLEM_ASPECT) / 2, 52, emblemH, '#ffffff');
+    const wordH = 70;
+    drawWordmark(ctx, 256 - (wordH * WORDMARK_ASPECT) / 2, 334, wordH, '#ffffff');
   });
 }
 
@@ -227,5 +227,184 @@ export function getBannerTexture(lines: string[], theme: 'dark' | 'light'): Canv
     ctx.font = '700 30px Inter, Arial, sans-serif';
     ctx.fillText('SUMMIT · ARBITRUM', W / 2, 1180);
     ctx.textAlign = 'left';
+  });
+}
+
+/** Enseigne circulaire suspendue (texture enroulée autour d'un cylindre ouvert, répétée 2×). */
+export function getHangingSignTexture(title: string, number: string, accent: string): CanvasTexture {
+  const tex = makeTexture(`hang-${number}-${title}-${accent}`, 2048, 256, (ctx) => {
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, 2048, 256);
+    ctx.fillStyle = accent;
+    ctx.fillRect(0, 0, 2048, 20);
+    ctx.fillRect(0, 236, 2048, 20);
+    ctx.fillRect(0, 20, 220, 216);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 120px Inter, Arial, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(number, 110, 132);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#0b1f3a';
+    let size = 92;
+    ctx.font = `800 ${size}px Inter, Arial, sans-serif`;
+    while (ctx.measureText(title).width > 1180 && size > 40) {
+      size -= 4;
+      ctx.font = `800 ${size}px Inter, Arial, sans-serif`;
+    }
+    ctx.fillText(title, 270, 132);
+    drawLogo(ctx, 1490, 92, 76, VARIANT_COLORS.onLight);
+  });
+  tex.wrapS = RepeatWrapping;
+  tex.repeat.set(2, 1);
+  return tex;
+}
+
+/* ------------------------------------------------------------------ */
+/* Matières (bois, marbre) et signalétique du café / des toilettes      */
+/* ------------------------------------------------------------------ */
+
+/** Bois chêne clair : lames verticales avec veinage. */
+export function getWoodTexture(): CanvasTexture {
+  const tex = makeTexture('wood', 512, 512, (ctx) => {
+    ctx.fillStyle = '#c89b6d';
+    ctx.fillRect(0, 0, 512, 512);
+    for (let p = 0; p < 8; p++) {
+      const x0 = p * 64;
+      ctx.fillStyle = p % 2 ? 'rgba(120,80,40,0.10)' : 'rgba(255,240,220,0.08)';
+      ctx.fillRect(x0, 0, 64, 512);
+      ctx.strokeStyle = 'rgba(90,55,25,0.18)';
+      ctx.lineWidth = 1.5;
+      for (let k = 0; k < 7; k++) {
+        ctx.beginPath();
+        const off = (k * 9 + p * 13) % 60;
+        for (let y = 0; y <= 512; y += 16) {
+          const x = x0 + 4 + off * 0.9 + Math.sin(y / 40 + k + p) * 3;
+          if (y === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      ctx.fillStyle = 'rgba(70,40,15,0.35)';
+      ctx.fillRect(x0, 0, 2, 512);
+    }
+  });
+  tex.wrapS = RepeatWrapping;
+  tex.wrapT = RepeatWrapping;
+  return tex;
+}
+
+/** Parquet (lames horizontales décalées) pour le sol du café. */
+export function getParquetTexture(): CanvasTexture {
+  const tex = makeTexture('parquet', 512, 512, (ctx) => {
+    const rows = 8;
+    const h = 512 / rows;
+    for (let r = 0; r < rows; r++) {
+      const off = (r % 2) * 128;
+      for (let c = -1; c < 3; c++) {
+        const shade = 180 + ((r * 7 + c * 13) % 5) * 8;
+        ctx.fillStyle = `rgb(${shade + 20}, ${shade - 20}, ${shade - 70})`;
+        ctx.fillRect(c * 256 + off, r * h, 256, h);
+        ctx.strokeStyle = 'rgba(80,50,20,0.35)';
+        ctx.strokeRect(c * 256 + off, r * h, 256, h);
+      }
+    }
+  });
+  tex.wrapS = RepeatWrapping;
+  tex.wrapT = RepeatWrapping;
+  return tex;
+}
+
+/** Marbre blanc veiné gris. */
+export function getMarbleTexture(): CanvasTexture {
+  const tex = makeTexture('marble', 512, 512, (ctx) => {
+    ctx.fillStyle = '#f5f4f1';
+    ctx.fillRect(0, 0, 512, 512);
+    for (let k = 0; k < 14; k++) {
+      ctx.strokeStyle = `rgba(120,120,130,${0.08 + (k % 4) * 0.04})`;
+      ctx.lineWidth = 1 + (k % 3);
+      ctx.beginPath();
+      let x = (k * 97) % 512;
+      let y = 0;
+      ctx.moveTo(x, y);
+      while (y < 512) {
+        x += Math.sin(y / 30 + k) * 14 + ((k % 2) * 2 - 1) * 4;
+        y += 18;
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+  });
+  tex.wrapS = RepeatWrapping;
+  tex.wrapT = RepeatWrapping;
+  return tex;
+}
+
+/** Ardoise du menu du café. */
+export function getMenuTexture(): CanvasTexture {
+  return makeTexture('menu', 1024, 640, (ctx) => {
+    ctx.fillStyle = '#1f2326';
+    ctx.fillRect(0, 0, 1024, 640);
+    ctx.strokeStyle = '#b08d57';
+    ctx.lineWidth = 10;
+    ctx.strokeRect(5, 5, 1014, 630);
+    drawLogo(ctx, 60, 50, 54, { emblem: BRAND_BLUE, text: '#ffffff' });
+    ctx.fillStyle = '#f5e6c8';
+    ctx.font = '800 54px Inter, Arial, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('CAFÉ', 964, 96);
+    ctx.textAlign = 'left';
+    const items: [string, string][] = [
+      ['Espresso', '0% fees'],
+      ['Cappuccino', '0% fees'],
+      ['Flat white', '0% fees'],
+      ['Matcha latte', '0% fees'],
+      ['RFQ cold brew', 'firm price'],
+      ['Croissant · cookie', 'free'],
+    ];
+    items.forEach(([name, price], i) => {
+      const y = 200 + i * 70;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '600 40px Inter, Arial, sans-serif';
+      ctx.fillText(name, 70, y);
+      ctx.fillStyle = '#9cc8fb';
+      ctx.textAlign = 'right';
+      ctx.fillText(price, 954, y);
+      ctx.textAlign = 'left';
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([4, 10]);
+      ctx.beginPath();
+      ctx.moveTo(70 + ctx.measureText(name).width + 20, y - 12);
+      ctx.lineTo(954 - 220, y - 12);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+  });
+}
+
+/** Pictogramme lumineux des toilettes (homme / femme / accessible), blanc sur bleu nuit. */
+export function getRestroomSignTexture(kind: 'man' | 'woman'): CanvasTexture {
+  return makeTexture(`wc-${kind}`, 256, 256, (ctx) => {
+    ctx.fillStyle = '#0b1f3a';
+    ctx.fillRect(0, 0, 256, 256);
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(128, 62, 26, 0, Math.PI * 2);
+    ctx.fill();
+    if (kind === 'man') {
+      ctx.fillRect(96, 98, 64, 78);
+      ctx.fillRect(100, 176, 24, 54);
+      ctx.fillRect(132, 176, 24, 54);
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(128, 96);
+      ctx.lineTo(176, 186);
+      ctx.lineTo(80, 186);
+      ctx.closePath();
+      ctx.fill();
+      ctx.fillRect(106, 186, 18, 44);
+      ctx.fillRect(132, 186, 18, 44);
+    }
   });
 }
