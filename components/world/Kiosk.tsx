@@ -6,6 +6,8 @@ import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import type { Group, Mesh, MeshStandardMaterial } from 'three';
 import type { InteractiveId } from '@/lib/content';
 import { t } from '@/lib/i18n';
+import { audio } from '@/lib/audio';
+import { FLASH_LEAD_MS, flashAt } from '@/lib/fx';
 import { useWorld } from '@/lib/store';
 import { getKioskTexture } from './brandTextures';
 import { LogoPlane } from './Logo';
@@ -14,7 +16,8 @@ import { LogoPlane } from './Logo';
 export function tryInteract(id: InteractiveId) {
   const { nearbyId, activeId, started, open, showToast, lang } = useWorld.getState();
   if (!started || activeId) return;
-  if (nearbyId === id) open(id);
+  // Laisse le flash lumineux s'afficher avant que le pop-up ne mette la 3D en pause.
+  if (nearbyId === id) setTimeout(() => open(id), FLASH_LEAD_MS);
   else showToast(t('tooFar', lang));
 }
 
@@ -25,6 +28,9 @@ export function interactiveHandlers(id: InteractiveId) {
       e.stopPropagation();
       // `delta` = distance parcourue par le pointeur depuis le pointerdown : on ignore les glisser-caméra.
       if (e.delta > 6) return;
+      // Retour immédiat : petit « pop » + flash lumineux au point cliqué.
+      audio.click();
+      flashAt([e.point.x, e.point.y, e.point.z]);
       tryInteract(id);
     },
     onPointerOver: (e: ThreeEvent<PointerEvent>) => {

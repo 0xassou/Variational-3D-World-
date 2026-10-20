@@ -1,12 +1,34 @@
 'use client';
 
-import { Info, Keyboard, MousePointerClick, Presentation } from 'lucide-react';
+import { Info, Keyboard, MousePointerClick, Presentation, Volume2, VolumeX } from 'lucide-react';
 import { useState } from 'react';
 import { CONTENT } from '@/lib/content';
 import { t } from '@/lib/i18n';
 import { useWorld } from '@/lib/store';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { VariationalLogo } from './VariationalLogo';
+
+/** Bouton discret Son ON / OFF (musique d'ambiance + effets). */
+function SoundToggle() {
+  const lang = useWorld((s) => s.lang);
+  const soundOn = useWorld((s) => s.soundOn);
+  const toggleSound = useWorld((s) => s.toggleSound);
+  const label = soundOn ? t('soundOff', lang) : t('soundOn', lang);
+  return (
+    <button
+      type="button"
+      data-silent
+      onClick={toggleSound}
+      aria-pressed={!soundOn}
+      aria-label={label}
+      title={label}
+      className="flex h-9 items-center gap-1.5 rounded-full border border-slate-200 bg-white/90 px-3 text-xs font-semibold text-slate-600 shadow-sm transition hover:text-slate-900"
+    >
+      {soundOn ? <Volume2 className="h-4 w-4 text-brand-500" aria-hidden /> : <VolumeX className="h-4 w-4" aria-hidden />}
+      <span className="hidden sm:inline">{soundOn ? 'ON' : 'OFF'}</span>
+    </button>
+  );
+}
 
 function Intro() {
   const lang = useWorld((s) => s.lang);
@@ -124,7 +146,8 @@ export function HUD() {
         <span className="text-sm font-bold text-slate-800">Summit</span>
         <span className="hidden text-xs text-slate-400 sm:inline">· Omni & Pro on Arbitrum</span>
       </div>
-      <div className="pointer-events-auto fixed right-4 top-4">
+      <div className="pointer-events-auto fixed right-4 top-4 flex items-center gap-2">
+        <SoundToggle />
         <LanguageSwitcher />
       </div>
       {started ? (

@@ -11,6 +11,9 @@
 
 export const VARIATIONAL_X = { label: '@variational_io', url: 'https://x.com/variational_io' } as const;
 
+/** Créateur du Variational Summit 3D. */
+export const CREATOR_X = { label: '@0x_assou', url: 'https://x.com/0x_assou' } as const;
+
 export const CEO_URL = { label: 'Lucas Schuermann', url: 'https://lucasschuermann.com/' } as const;
 
 export const OMNI_URL = 'https://omni.variational.io';

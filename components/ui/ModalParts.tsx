@@ -23,7 +23,7 @@ import {
   type VideoClip,
 } from '@/lib/content';
 import { t } from '@/lib/i18n';
-import { accessUrl, CEO_URL, REFERRAL_CODE, VARIATIONAL_X } from '@/lib/links';
+import { accessUrl, CEO_URL, CREATOR_X, REFERRAL_CODE, VARIATIONAL_X } from '@/lib/links';
 import { useWorld } from '@/lib/store';
 import type { Highlight } from '@/lib/visuals';
 
@@ -354,6 +354,25 @@ export function SocialLinks({ lang }: { lang: Lang }) {
         </span>
       </a>
       <p className="text-xs text-slate-500 md:col-span-3">{t('socialAccessNote', lang)}</p>
+      {/* Créateur du Summit */}
+      <a
+        href={CREATOR_X.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-900 to-[#13325e] p-5 text-white shadow-sm transition hover:shadow-md md:col-span-3"
+      >
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20">
+          <AtSign className="h-6 w-6 text-brand-400" aria-hidden />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-brand-400">{t('creatorTitle', lang)}</span>
+          <span className="mt-1 block text-[15px] leading-6 text-slate-100">{t('creatorMessage', lang)}</span>
+        </span>
+        <span className="hidden shrink-0 items-center gap-1 rounded-full bg-white/10 px-3 py-1.5 text-sm font-semibold transition group-hover:bg-white/20 sm:inline-flex">
+          {CREATOR_X.label}
+          <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+        </span>
+      </a>
     </div>
   );
 }
