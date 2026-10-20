@@ -10,7 +10,6 @@ import {
   MonitorPlay,
   Rocket,
   Square,
-  TriangleAlert,
   UserRound,
 } from 'lucide-react';
 import {
@@ -51,11 +50,6 @@ export function Highlights({ items, accent, lang }: { items: Highlight[]; accent
           <span className="absolute inset-y-0 left-0 w-1" style={{ backgroundColor: accent }} />
           <p className="text-2xl font-extrabold tracking-tight text-slate-900">{h.value}</p>
           <p className="mt-0.5 text-sm text-slate-600">{h.label[lang]}</p>
-          {h.unverified && (
-            <span className="mt-2 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-              {t('unverified', lang)}
-            </span>
-          )}
         </div>
       ))}
     </div>
@@ -188,9 +182,6 @@ export function Quotes({ quotes, accent, lang, grid }: { quotes: Quote[]; accent
             <p className="mt-2 flex flex-wrap items-center gap-2 text-xs text-slate-500">
               <span className="font-semibold text-slate-700">{q.author}</span>
               <span>· {q.context}</span>
-              {!q.verified && (
-                <span className="rounded-full bg-amber-100 px-2 py-0.5 font-medium text-amber-700">{t('unverified', lang)}</span>
-              )}
               {q.url && <ExternalLink className="h-3 w-3" aria-hidden />}
             </p>
           </>
@@ -305,19 +296,6 @@ export function VideoItem({ clip, lang }: { clip: VideoClip; lang: Lang }) {
         </div>
       )}
     </li>
-  );
-}
-
-export function ToVerify({ items }: { items: string[] }) {
-  return (
-    <ul className="space-y-1.5 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-      {items.map((item) => (
-        <li key={item} className="flex items-start gap-2">
-          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden />
-          {item}
-        </li>
-      ))}
-    </ul>
   );
 }
 

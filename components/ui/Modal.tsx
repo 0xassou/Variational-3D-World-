@@ -17,7 +17,6 @@ import {
   Quote as QuoteIcon,
   Sparkles,
   Table2,
-  TriangleAlert,
   X,
 } from 'lucide-react';
 import { CONTENT, VIDEOS, type InteractiveId, type Lang, type StandContent, type VideoClip } from '@/lib/content';
@@ -36,7 +35,6 @@ import {
   SocialLinks,
   StepCards,
   TechCards,
-  ToVerify,
   VideoItem,
 } from './ModalParts';
 import { VariationalLogo } from './VariationalLogo';
@@ -146,11 +144,6 @@ function DeepTech({ content, lang }: { content: StandContent; lang: Lang }) {
       {content.table && (
         <Section icon={<Table2 className="h-4 w-4" aria-hidden />} title={content.table.caption[lang]}>
           <CompareTable table={content.table} lang={lang} />
-        </Section>
-      )}
-      {content.toVerify && (
-        <Section icon={<TriangleAlert className="h-4 w-4 text-amber-500" aria-hidden />} title={t('toVerify', lang)}>
-          <ToVerify items={content.toVerify[lang]} />
         </Section>
       )}
     </>
