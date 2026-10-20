@@ -39,6 +39,11 @@ export const UI = {
     en: 'WASD / ZQSD / arrows: move',
     ko: 'WASD / ZQSD / 방향키: 이동',
   },
+  controlsTouch: {
+    fr: 'Mobile : maintenez le doigt et glissez pour marcher (loin = courir) · 2e doigt : caméra',
+    en: 'Mobile: hold and drag one finger to walk (further = run) · 2nd finger: camera',
+    ko: '모바일: 손가락을 누른 채 끌어 이동 (멀리 = 달리기) · 두 번째 손가락: 카메라',
+  },
   controlsRun: { fr: 'Maj : courir', en: 'Shift: run', ko: 'Shift: 달리기' },
   controlsCamera: {
     fr: 'Clic gauche maintenu + souris : caméra · molette : zoom',
