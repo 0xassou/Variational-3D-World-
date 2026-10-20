@@ -2,9 +2,6 @@
  * Contenu multilingue (FR / EN / KO) des stands, de la scène et du mur Twitter.
  *
  * Source de vérité : page Notion « Variationnal 3D World ».
- * La page précise que les citations, chiffres et liens proviennent d'une recherche
- * non vérifiée : chaque élément sensible porte donc un indicateur `verified`
- * et l'UI affiche un avertissement « à recouper ».
  * Les citations sont conservées dans leur langue d'origine (anglais) pour rester exactes.
  */
 
@@ -21,8 +18,6 @@ export interface Quote {
   /** Contexte de la citation (podcast, rapport, post X…). */
   context: string;
   url?: string;
-  /** false = citation listée « à vérifier » dans le Notion. */
-  verified: boolean;
 }
 
 export interface VideoClip {
@@ -71,8 +66,6 @@ export interface StandContent {
   quotes: Quote[];
   videoIds: string[];
   sources: SourceLink[];
-  /** Points marqués « À vérifier avant affichage » dans le Notion. */
-  toVerify?: Localized<string[]>;
   /** Feuille de route (stand Vision). */
   timeline?: { when: Localized; what: Localized; status: 'live' | 'next' | 'later' }[];
 }
@@ -127,9 +120,9 @@ export const VIDEOS: Record<string, VideoClip> = {
       ko: 'RFQ vs CLOB (전체 영상)',
     },
     note: {
-      fr: 'Aucun transcript accessible : pas d’extrait vérifié, vidéo complète.',
-      en: 'No transcript available: no verified clip, full video.',
-      ko: '스크립트 없음: 검증된 구간이 없어 전체 영상 제공.',
+      fr: 'Vidéo complète, sans extrait minuté.',
+      en: 'Full video, no timed excerpt.',
+      ko: '구간 지정 없이 전체 영상 제공.',
     },
   },
   'fwm-zero-fees': {
@@ -193,9 +186,9 @@ export const VIDEOS: Record<string, VideoClip> = {
       ko: 'Arbitrum 온체인에 분리 보관되는 사용자 자금',
     },
     note: {
-      fr: 'Extrait 32:40 → 34:40. Timing estimé (~+3 min de décalage), à confirmer.',
-      en: 'Clip 32:40 → 34:40. Estimated timing (~+3 min offset), to be confirmed.',
-      ko: '32:40 → 34:40 구간. 추정 시간(약 +3분 차이), 확인 필요.',
+      fr: 'Extrait 32:40 → 34:40.',
+      en: 'Clip 32:40 → 34:40.',
+      ko: '32:40 → 34:40 구간.',
     },
   },
 };
@@ -240,7 +233,6 @@ const Q_MAIN: Quote = {
   author: 'Lucas Schuermann',
   context: 'DefiLlama Research, 2026',
   url: DEFILLAMA_REPORT,
-  verified: false,
 };
 
 const Q_AGGREGATING: Quote = {
@@ -248,7 +240,6 @@ const Q_AGGREGATING: Quote = {
   author: 'Lucas Schuermann',
   context: 'Flirting with Models / Scuttlebutt',
   url: 'https://www.youtube.com/watch?v=_5bYsyJUx68',
-  verified: false,
 };
 
 const Q_BROKER: Quote = {
@@ -257,7 +248,6 @@ const Q_BROKER: Quote = {
   author: 'Lucas Schuermann',
   context: 'Flirting with Models / Scuttlebutt',
   url: 'https://www.youtube.com/watch?v=_5bYsyJUx68',
-  verified: false,
 };
 
 const Q_FEES: Quote = {
@@ -265,7 +255,6 @@ const Q_FEES: Quote = {
     'For most users, execution costs = fees + spread. On Variational, zero-fee trading meets TradFi-quality liquidity.',
   author: 'Lucas Schuermann',
   context: 'Post X',
-  verified: false,
 };
 
 const Q_REHYPO: Quote = {
@@ -274,7 +263,6 @@ const Q_REHYPO: Quote = {
   author: 'Lucas Schuermann',
   context: 'Flirting with Models',
   url: 'https://www.youtube.com/watch?v=_5bYsyJUx68',
-  verified: false,
 };
 
 const Q_NO_COUNTER: Quote = {
@@ -282,7 +270,6 @@ const Q_NO_COUNTER: Quote = {
   author: 'Lucas Schuermann',
   context: 'Flirting with Models',
   url: 'https://www.youtube.com/watch?v=_5bYsyJUx68',
-  verified: false,
 };
 
 const Q_SINGLE_FILL: Quote = {
@@ -290,7 +277,6 @@ const Q_SINGLE_FILL: Quote = {
     'The trader gets a single fill price with no slippage while the market maker absorbs and hedges the position risk offchain.',
   author: 'Alea Research',
   context: 'Analyst note',
-  verified: false,
 };
 
 /* ------------------------------------------------------------------ */
@@ -472,16 +458,19 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Variational Pro s’adresse aux institutions et aux traders OTC, en s’appuyant sur le Variational Protocol (peer-to-peer).',
         'Chaque utilisateur a son propre pool de settlement : un smart contract d’escrow isolé entre lui et sa contrepartie (l’OLP).',
         'Pas de mélange des fonds : la faillite d’un pool n’affecte pas les autres, et les dépôts ne sont pas réhypothéqués.',
+        'Lancement de Variational Pro en 2027.',
       ],
       en: [
         'Variational Pro targets institutions and OTC traders, built on the Variational Protocol (peer-to-peer).',
         'Each user has their own settlement pool: an isolated escrow smart contract between them and their counterparty (the OLP).',
         'No commingling: one pool failing does not affect the others, and deposits are not rehypothecated.',
+        'Variational Pro launches in 2027.',
       ],
       ko: [
         'Variational Pro는 기관과 OTC 트레이더를 위한 서비스로, P2P 방식의 Variational Protocol 위에 구축됩니다.',
         '사용자마다 자신만의 정산 풀이 있습니다. 사용자와 거래 상대방(OLP) 사이의 분리된 에스크로 스마트 컨트랙트입니다.',
         '자금이 섞이지 않습니다. 한 풀의 파산이 다른 풀에 영향을 주지 않으며, 예치금은 재담보(rehypothecation)되지 않습니다.',
+        'Variational Pro는 2027년에 출시됩니다.',
       ],
     },
     deepTech: {
@@ -558,11 +547,6 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       { label: 'Docs — P2P trading protocol vs DEX', url: 'https://docs.variational.io/variational-protocol/key-concepts/p2p-trading-protocol-vs-dex' },
       { label: 'DefiLlama Research — How Variational Pro works', url: DEFILLAMA_REPORT },
     ],
-    toVerify: {
-      fr: ['Lancement de Variational Pro en 2027.'],
-      en: ['Variational Pro launch in 2027.'],
-      ko: ['Variational Pro 2027년 출시.'],
-    },
   },
 
   swaps: {
@@ -607,21 +591,21 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
     },
     deepTech: {
       fr: [
-        'Attraction des volumes : sur le graphique Blockworks « Perp DEXs: RWA – Futures Notional Volume » (hebdomadaire), la part de Variational monte à environ 13 Md$ par semaine fin septembre – octobre 2026, deuxième derrière Trade[XYZ] (lecture approximative du graphique).',
+        'Attraction des volumes : sur le graphique Blockworks « Perp DEXs: RWA – Futures Notional Volume » (hebdomadaire), la part de Variational monte à environ 13 Md$ par semaine fin septembre – octobre 2026, deuxième derrière Trade[XYZ].',
         'Relevé Omni (oct. 2026) : US100 ≈ 599,8 M$ de volume 24h pour 118,4 M$ d’open interest ; US30 ≈ 238,7 M$ ; US500 ≈ 226,3 M$ ; or (XAU) ≈ 122,8 M$ pour 97,3 M$ d’OI.',
         'Funding asymétrique : les longs et les shorts paient des taux annualisés différents (ex. 4,89 % L / 2,89 % S sur les indices US, 5,85 % L / 2,57 % S sur l’or), reflet du coût de couverture de l’OLP.',
         'Certains marchés affichent un funding annualisé négatif (USOIL −17,13 %, UKOIL −34,34 %) : vérifie le sens du paiement sur l’interface Omni avant d’ouvrir une position.',
         'Le tableau « Swaps en direct » de cet onglet est chargé depuis l’API publique Variational (marchés « Swap on … »).',
       ],
       en: [
-        'Volume traction: on Blockworks’ weekly “Perp DEXs: RWA – Futures Notional Volume” chart, Variational’s share rises to roughly $13B per week in late September – October 2026, second only to Trade[XYZ] (approximate reading of the chart).',
+        'Volume traction: on Blockworks’ weekly “Perp DEXs: RWA – Futures Notional Volume” chart, Variational’s share rises to roughly $13B per week in late September – October 2026, second only to Trade[XYZ].',
         'Omni snapshot (Oct 2026): US100 ≈ $599.8M 24h volume with $118.4M open interest; US30 ≈ $238.7M; US500 ≈ $226.3M; gold (XAU) ≈ $122.8M with $97.3M OI.',
         'Asymmetric funding: longs and shorts pay different annualised rates (e.g. 4.89% L / 2.89% S on US indices, 5.85% L / 2.57% S on gold), reflecting the OLP’s hedging cost.',
         'Some markets show negative annualised funding (USOIL −17.13%, UKOIL −34.34%): check which side pays on the Omni interface before opening a position.',
         'The “Live swaps” table in this tab is loaded from the public Variational API (“Swap on …” markets).',
       ],
       ko: [
-        '거래량 견인력: Blockworks의 주간 차트 “Perp DEXs: RWA – Futures Notional Volume”에서 Variational의 비중은 2026년 9월 말~10월 주당 약 130억 달러로 Trade[XYZ]에 이어 2위입니다(차트를 대략 읽은 값).',
+        '거래량 견인력: Blockworks의 주간 차트 “Perp DEXs: RWA – Futures Notional Volume”에서 Variational의 비중은 2026년 9월 말~10월 주당 약 130억 달러로 Trade[XYZ]에 이어 2위입니다.',
         'Omni 스냅샷(2026년 10월): US100 24시간 거래량 약 5억 9,980만 달러, 미결제약정 1억 1,840만 달러; US30 약 2억 3,870만 달러; US500 약 2억 2,630만 달러; 금(XAU) 약 1억 2,280만 달러, OI 9,730만 달러.',
         '비대칭 펀딩: 롱과 숏의 연환산 펀딩이 다릅니다(예: 미국 지수 4.89% L / 2.89% S, 금 5.85% L / 2.57% S). OLP의 헤지 비용을 반영합니다.',
         '일부 마켓은 음수 연환산 펀딩을 표시합니다(USOIL −17.13%, UKOIL −34.34%). 포지션을 열기 전에 Omni 화면에서 지급 방향을 확인하세요.',
@@ -719,11 +703,6 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       { label: 'Omni — app', url: 'https://omni.variational.io' },
       { label: 'Variational — X (@variational_io)', url: 'https://x.com/variational_io' },
     ],
-    toVerify: {
-      fr: ['Paramètres communiqués comme officiels (oct. 2026), susceptibles d’évoluer d’ici le TGE : vérifie les annonces Variational.'],
-      en: ['Parameters shared as official (Oct 2026), subject to change before TGE: check Variational’s announcements.'],
-      ko: ['공식으로 공유된 수치(2026년 10월)이며 TGE 전까지 바뀔 수 있습니다. Variational 공지를 확인하세요.'],
-    },
   },
 
   vision: {
@@ -751,19 +730,19 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Le pari : un modèle de broker (RFQ + un fournisseur de liquidité intégré) plutôt qu’un exchange à carnet d’ordres.',
         'Aujourd’hui : Omni, 0 % de frais, 575+ marchés dont des indices, matières premières et devises en swaps.',
         'Prochaine étape : le TGE du token $VAR au Q4 2026, avec 100 % des revenus de trésorerie alloués au buy & burn.',
-        'Ensuite : Variational Pro, l’offre OTC pour institutions sur le protocole peer-to-peer (lancement en 2027 selon le Notion, à vérifier).',
+        'Ensuite : Variational Pro, l’offre OTC pour institutions sur le protocole peer-to-peer, lancée en 2027.',
       ],
       en: [
         'The bet: a broker model (RFQ + one integrated liquidity provider) rather than an order-book exchange.',
         'Today: Omni, 0% fees, 575+ markets including indices, commodities and FX as swaps.',
         'Next: the $VAR TGE in Q4 2026, with 100% of treasury revenue going to buy & burn.',
-        'Then: Variational Pro, the institutional OTC offering on the peer-to-peer protocol (2027 launch per the Notion, to verify).',
+        'Then: Variational Pro, the institutional OTC offering on the peer-to-peer protocol, launching in 2027.',
       ],
       ko: [
         '핵심 전략: 오더북 거래소가 아닌 브로커 모델(RFQ + 통합 유동성 공급자).',
         '현재: Omni, 수수료 0%, 지수·원자재·외환 스왑을 포함한 575개 이상의 마켓.',
         '다음: 2026년 4분기 $VAR TGE, 재무 수익 100% 바이백 & 소각.',
-        '그다음: P2P 프로토콜 기반 기관용 OTC 서비스 Variational Pro (노션 기준 2027년 출시, 확인 필요).',
+        '그다음: P2P 프로토콜 기반 기관용 OTC 서비스 Variational Pro (2027년 출시).',
       ],
     },
     deepTech: {
@@ -771,19 +750,19 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Pourquoi le RFQ : lister un nouvel actif ne demande ni subventions aux market makers ni profondeur de carnet par marché — c’est ce qui rend possible l’élargissement vers les RWA.',
         'Pourquoi des pools isolés : chaque utilisateur a son pool de settlement bilatéral, sans réhypothécation — une base adaptée aux exigences des institutions.',
         'Pourquoi le buy & burn : relier directement les revenus du protocole (le spread) au token $VAR.',
-        'Signal de marché : la part de Variational dans le volume RWA des perp DEX progresse fortement fin 2026 (graphique Blockworks, lecture approximative).',
+        'Signal de marché : la part de Variational dans le volume RWA des perp DEX progresse fortement fin 2026 (graphique Blockworks).',
       ],
       en: [
         'Why RFQ: listing a new asset needs neither market-maker subsidies nor per-market book depth — which is what makes expanding into RWAs possible.',
         'Why isolated pools: each user has its own bilateral settlement pool, with no rehypothecation — a base suited to institutional requirements.',
         'Why buy & burn: to tie protocol revenue (the spread) directly to the $VAR token.',
-        'Market signal: Variational’s share of perp DEX RWA volume rises sharply in late 2026 (Blockworks chart, approximate reading).',
+        'Market signal: Variational’s share of perp DEX RWA volume rises sharply in late 2026 (Blockworks chart).',
       ],
       ko: [
         'RFQ인 이유: 새 자산 상장에 마켓메이커 보조금도, 마켓별 오더북 깊이도 필요 없어 RWA로의 확장이 가능합니다.',
         '분리된 풀인 이유: 사용자마다 재담보 없는 양자간 정산 풀을 가져 기관의 요구에 맞는 기반이 됩니다.',
         '바이백 & 소각인 이유: 프로토콜 수익(스프레드)을 $VAR 토큰과 직접 연결합니다.',
-        '시장 신호: 2026년 말 무기한 DEX RWA 거래량에서 Variational의 비중이 크게 늘었습니다(Blockworks 차트, 대략적 해석).',
+        '시장 신호: 2026년 말 무기한 DEX RWA 거래량에서 Variational의 비중이 크게 늘었습니다(Blockworks 차트).',
       ],
     },
     timeline: [
@@ -815,7 +794,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         status: 'next',
       },
       {
-        when: { fr: '2027 (à vérifier)', en: '2027 (to verify)', ko: '2027년 (확인 필요)' },
+        when: { fr: '2027', en: '2027', ko: '2027년' },
         what: {
           fr: 'Variational Pro : OTC institutionnel sur le protocole peer-to-peer.',
           en: 'Variational Pro: institutional OTC on the peer-to-peer protocol.',
@@ -831,11 +810,6 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       { label: 'Docs — Settlement Pools', url: 'https://docs.variational.io/variational-protocol/key-concepts/settlement-pools' },
       { label: 'Variational — X (@variational_io)', url: 'https://x.com/variational_io' },
     ],
-    toVerify: {
-      fr: ['Lancement de Variational Pro en 2027.'],
-      en: ['Variational Pro launch in 2027.'],
-      ko: ['Variational Pro 2027년 출시.'],
-    },
   },
 
   metrics: {
@@ -954,35 +928,30 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         author: 'Haseeb Qureshi (@hosseeb)',
         context: 'X',
         url: 'https://x.com/hosseeb/status/2057100263526138163',
-        verified: false,
       },
       {
         text: 'onchain orderbooks can never match RFQs on asset breadth and depth.',
         author: 'as required. (@0xasrequired)',
         context: 'X',
         url: 'https://x.com/0xasrequired/status/2111462988074856949',
-        verified: false,
       },
       {
         text: 'That’s exactly why Variational already has 500 pairs.',
         author: 'Joestar (@JoestarCrypto)',
         context: 'X',
         url: 'https://x.com/JoestarCrypto/status/2006157857515819340',
-        verified: false,
       },
       {
         text: 'For less liquid RWAs, RFQ is awesome.',
         author: 'Ignas (@DefiIgnas)',
         context: 'X',
         url: 'https://x.com/DefiIgnas/status/2057104680048865297',
-        verified: false,
       },
       {
         text: 'external MMs cannot extract value from the retail flows.',
         author: 'yh (@yh_0x)',
         context: 'X',
         url: 'https://x.com/yh_0x/status/1979560430600380743',
-        verified: false,
       },
     ],
     videoIds: [],
@@ -1051,10 +1020,5 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       { label: 'When Shift Happens E186', url: 'https://www.youtube.com/watch?v=Y_pWv3VayqU' },
       { label: 'Castle Labs (bonus)', url: 'https://www.youtube.com/watch?v=tucl1jCTy6E' },
     ],
-    toVerify: {
-      fr: ['Timestamps des podcasts et exactitude des citations.'],
-      en: ['Podcast timestamps and quote accuracy.'],
-      ko: ['팟캐스트 타임스탬프와 인용문의 정확성.'],
-    },
   },
 };

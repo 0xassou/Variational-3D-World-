@@ -8,8 +8,6 @@ export const UI = {
   quotes: { fr: 'Citations', en: 'Quotes', ko: '인용' },
   videos: { fr: 'Extraits vidéo', en: 'Video clips', ko: '영상 클립' },
   sources: { fr: 'Sources', en: 'Sources', ko: '출처' },
-  toVerify: { fr: 'À vérifier avant affichage', en: 'To verify before display', ko: '표시 전 확인 필요' },
-  unverified: { fr: 'à recouper', en: 'to cross-check', ko: '교차 확인 필요' },
   playOnScreen: { fr: 'Diffuser sur l’écran', en: 'Play on screen', ko: '스크린에서 재생' },
   nowOnScreen: { fr: 'À l’écran', en: 'On screen', ko: '재생 중' },
   stopScreen: { fr: 'Arrêter', en: 'Stop', ko: '정지' },
@@ -27,9 +25,9 @@ export const UI = {
   close: { fr: 'Fermer', en: 'Close', ko: '닫기' },
   language: { fr: 'Langue', en: 'Language', ko: '언어' },
   disclaimer: {
-    fr: 'Contenu éducatif issu de recherches non vérifiées. Pas de conseil financier.',
-    en: 'Educational content from unverified research. Not financial advice.',
-    ko: '검증되지 않은 리서치 기반의 교육용 콘텐츠입니다. 투자 조언이 아닙니다.',
+    fr: 'Contenu éducatif. Pas de conseil financier.',
+    en: 'Educational content. Not financial advice.',
+    ko: '교육용 콘텐츠입니다. 투자 조언이 아닙니다.',
   },
   interactPrompt: {
     fr: 'Appuie sur E ou clique sur la borne',

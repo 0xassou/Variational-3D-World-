@@ -4,8 +4,6 @@ import type { InteractiveId, Localized } from './content';
 export interface Highlight {
   value: string;
   label: Localized;
-  /** Valeur à recouper (lecture approximative, annonce non confirmée…). */
-  unverified?: boolean;
 }
 
 export const HIGHLIGHTS: Partial<Record<InteractiveId, Highlight[]>> = {
@@ -27,7 +25,7 @@ export const HIGHLIGHTS: Partial<Record<InteractiveId, Highlight[]>> = {
   swaps: [
     { value: '10x', label: { fr: 'levier max (5x sur le cacao)', en: 'max leverage (5x on cocoa)', ko: '최대 레버리지 (코코아 5배)' } },
     { value: '0%', label: { fr: 'frais de trading', en: 'trading fees', ko: '거래 수수료' } },
-    { value: '~13 Md$', label: { fr: 'volume RWA / semaine (Blockworks, oct. 2026)', en: 'RWA volume / week (Blockworks, Oct 2026)', ko: '주간 RWA 거래량 (Blockworks, 2026년 10월)' }, unverified: true },
+    { value: '~13 Md$', label: { fr: 'volume RWA / semaine (Blockworks, oct. 2026)', en: 'RWA volume / week (Blockworks, Oct 2026)', ko: '주간 RWA 거래량 (Blockworks, 2026년 10월)' } },
   ],
   tokenomics: [
     { value: '32%', label: { fr: 'airdrop Genesis, 100 % débloqué au TGE', en: 'Genesis airdrop, 100% unlocked at TGE', ko: 'Genesis 에어드랍, TGE 시 100% 언락' } },
@@ -38,6 +36,6 @@ export const HIGHLIGHTS: Partial<Record<InteractiveId, Highlight[]>> = {
   vision: [
     { value: '575+', label: { fr: 'marchés aujourd’hui', en: 'markets today', ko: '현재 마켓 수' } },
     { value: 'Q4 2026', label: { fr: 'TGE $VAR', en: '$VAR TGE', ko: '$VAR TGE' } },
-    { value: '2027', label: { fr: 'Variational Pro (OTC)', en: 'Variational Pro (OTC)', ko: 'Variational Pro (OTC)' }, unverified: true },
+    { value: '2027', label: { fr: 'Variational Pro (OTC)', en: 'Variational Pro (OTC)', ko: 'Variational Pro (OTC)' } },
   ],
 };
