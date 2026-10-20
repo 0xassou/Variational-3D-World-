@@ -6,6 +6,7 @@ import { audio } from '@/lib/audio';
 import { readSoundPref, useWorld } from '@/lib/store';
 import { HUD } from './ui/HUD';
 import { Modal } from './ui/Modal';
+import { StagePlayer } from './ui/StagePlayer';
 
 // Three.js / Rapier (WASM) ne s'exécutent que côté navigateur.
 const Experience = dynamic(() => import('./Experience'), { ssr: false });
@@ -49,6 +50,7 @@ export default function World() {
     <main className="relative h-dvh w-screen overflow-hidden">
       <Experience />
       <HUD />
+      <StagePlayer />
       <Modal />
     </main>
   );

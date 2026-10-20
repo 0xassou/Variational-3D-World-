@@ -85,6 +85,16 @@ class AudioEngine {
     else if (this.ctx.state === 'suspended') void this.ctx.resume();
   }
 
+  /** Baisse la musique d'ambiance pendant la lecture d'une vidéo (les effets restent actifs). */
+  setMusicDucked(ducked: boolean) {
+    const ctx = this.ctx;
+    if (!ctx || !this.music) return;
+    const now = ctx.currentTime;
+    this.music.gain.cancelScheduledValues(now);
+    this.music.gain.setValueAtTime(this.music.gain.value, now);
+    this.music.gain.linearRampToValueAtTime(ducked ? 0 : MUSIC_LEVEL, now + 0.8);
+  }
+
   setMuted(muted: boolean) {
     this.muted = muted;
     const ctx = this.ctx;

@@ -16,6 +16,14 @@ export const UI = {
   watchHere: { fr: 'Regarder ici', en: 'Watch here', ko: '여기서 보기' },
   hideVideo: { fr: 'Masquer', en: 'Hide', ko: '숨기기' },
   openYoutube: { fr: 'YouTube', en: 'YouTube', ko: 'YouTube' },
+  youtubeOnly: {
+    fr: 'Lecture réservée à YouTube par son auteur',
+    en: 'The author only allows playback on YouTube',
+    ko: '작성자가 YouTube에서만 재생을 허용함',
+  },
+  liveOnStage: { fr: 'En direct sur l’écran de la scène', en: 'Live on the stage screen', ko: '메인 스크린 생중계' },
+  expand: { fr: 'Agrandir', en: 'Expand', ko: '크게 보기' },
+  shrink: { fr: 'Réduire', en: 'Shrink', ko: '작게 보기' },
   close: { fr: 'Fermer', en: 'Close', ko: '닫기' },
   language: { fr: 'Langue', en: 'Language', ko: '언어' },
   disclaimer: {
