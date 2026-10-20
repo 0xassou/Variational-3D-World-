@@ -279,6 +279,37 @@ const Q_SINGLE_FILL: Quote = {
   context: 'Analyst note',
 };
 
+/* Space X officiel de Variational, 20 oct. 2026 (Lucas Schuermann, interviewé par Andy de The Rollup). */
+const SPACE_SOURCE: SourceLink = {
+  label: 'Space X Variational × The Rollup — 20 Oct 2026 (Lucas Schuermann)',
+  url: 'https://x.com/variational_io',
+};
+const SPACE_CONTEXT = 'Space X Variational × The Rollup, 20 Oct 2026';
+
+const Q_PRO_INSTITUTIONS: Quote = {
+  text: '[Pro is] primarily targeted at institutions.',
+  author: 'Lucas Schuermann',
+  context: SPACE_CONTEXT,
+};
+
+const Q_NOT_EXCHANGE: Quote = {
+  text: '[Variational] is not an exchange.',
+  author: 'Lucas Schuermann',
+  context: SPACE_CONTEXT,
+};
+
+const Q_PRO_FIRST_STEPS: Quote = {
+  text: 'We’re going into pro next year.',
+  author: 'Lucas Schuermann',
+  context: SPACE_CONTEXT,
+};
+
+const Q_PRO_LARGER: Quote = {
+  text: 'Pro will eventually be the larger business.',
+  author: 'Lucas Schuermann',
+  context: SPACE_CONTEXT,
+};
+
 /* ------------------------------------------------------------------ */
 /* Stands                                                               */
 /* ------------------------------------------------------------------ */
@@ -328,6 +359,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Slippage AMM : le price impact dépend de la courbe et de la taille du pool, il est structurel.',
         'Slippage RFQ : quote ferme pour la taille demandée (single fill), puis l’OLP hedge off-chain (Binance, CME, dealers TradFi).',
         'Flow d’un trade RFQ (docs) : ordre → quote → acceptation → last look → collatéral → settlement.',
+        'Lucas Schuermann (Space X du 20 oct. 2026) : Variational « is not an exchange », c’est une plateforme technologique de négociation RFQ et de settlement/clearing.',
       ],
       en: [
         'RFQ + a vertically integrated OLP (Omni Liquidity Provider): the OLP aggregates CEXs, DEXs, OTC desks and TradFi dealers and only quotes when there is demand — no per-pair orderbook depth to maintain.',
@@ -335,6 +367,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'AMM slippage: price impact depends on the curve and pool size — it is structural.',
         'RFQ slippage: firm quote for the requested size (single fill), then the OLP hedges offchain (Binance, CME, TradFi dealers).',
         'RFQ trade flow (docs): order → quote → acceptance → last look → collateral → settlement.',
+        'Lucas Schuermann (X Space, 20 Oct 2026): Variational “is not an exchange”, it is a technology platform for RFQ negotiation and settlement/clearing.',
       ],
       ko: [
         'RFQ + 수직 통합된 OLP(Omni Liquidity Provider): OLP는 CEX, DEX, OTC, TradFi 딜러의 유동성을 모으고, 수요가 있을 때만 호가를 냅니다. 페어별 오더북 깊이를 유지할 필요가 없습니다.',
@@ -342,6 +375,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'AMM 슬리피지: 가격 영향이 커브와 풀 크기에 달려 있어 구조적입니다.',
         'RFQ 슬리피지: 요청 수량에 대한 확정 호가(단일 체결) 후 OLP가 오프체인에서 헤지합니다(Binance, CME, TradFi 딜러).',
         'RFQ 거래 흐름(문서): 주문 → 호가 → 수락 → 라스트 룩 → 담보 → 정산.',
+        'Lucas Schuermann(2026년 10월 20일 X 스페이스): Variational은 “is not an exchange”, 즉 거래소가 아니라 RFQ 협상과 정산/청산을 위한 기술 플랫폼입니다.',
       ],
     },
     flow: {
@@ -349,7 +383,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       en: ['Trader: quote request', 'OLP: firm price', 'Single fill onchain', 'Offchain hedge (CEX, CME, dealers)'],
       ko: ['트레이더: 견적 요청', 'OLP: 확정 가격', '온체인 단일 체결', '오프체인 헤지 (CEX, CME, 딜러)'],
     },
-    quotes: [Q_MAIN, Q_AGGREGATING, Q_BROKER, Q_SINGLE_FILL],
+    quotes: [Q_MAIN, Q_AGGREGATING, Q_BROKER, Q_NOT_EXCHANGE, Q_SINGLE_FILL],
     videoIds: ['bankless-broker', 'gwart-rfq', 'castle-rfq-clob'],
     sources: [
       { label: 'DefiLlama Research — Variational and the shift to onchain brokerage', url: DEFILLAMA_REPORT },
@@ -381,19 +415,22 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
     },
     beginner: {
       fr: [
-        'Omni est l’application de trading de perps de Variational, sur Arbitrum : 0 % de frais de trading.',
+        'Omni est le produit retail actuel de Variational, sur Arbitrum : perps et swaps sur des sous-jacents crypto et TradFi, avec 0 % de frais de trading.',
         'Comment c’est possible ? Le market maker (l’OLP) fait partie de Variational. Au lieu de payer des market makers externes, Variational capte le spread : c’est sa seule source de revenus.',
         'Pour toi, le coût réel d’un trade, c’est fees + spread. Sur Omni, il ne reste que le spread.',
+        'Selon Lucas Schuermann (Space X du 20 oct. 2026), Omni traite 3 à 4 milliards de dollars par jour.',
       ],
       en: [
-        'Omni is Variational’s perps trading app on Arbitrum: 0% trading fees.',
+        'Omni is Variational’s current retail product on Arbitrum: perps and swaps on crypto and TradFi underlyings, with 0% trading fees.',
         'How is that possible? The market maker (the OLP) is part of Variational. Instead of paying external market makers, Variational captures the spread — its only source of revenue.',
         'For you, the real cost of a trade is fees + spread. On Omni, only the spread remains.',
+        'According to Lucas Schuermann (X Space, 20 Oct 2026), Omni handles $3 to 4 billion a day.',
       ],
       ko: [
-        'Omni는 Arbitrum 위에서 동작하는 Variational의 무기한 선물(perps) 거래 앱으로, 거래 수수료가 0%입니다.',
+        'Omni는 Arbitrum 위에서 동작하는 Variational의 현재 리테일 상품으로, 크립토와 TradFi 기초자산의 무기한 선물(perps)과 스왑을 거래 수수료 0%로 제공합니다.',
         '어떻게 가능할까요? 마켓메이커(OLP)가 Variational 내부에 있기 때문입니다. 외부 마켓메이커에게 비용을 지불하는 대신 스프레드를 수익으로 가져가며, 이것이 유일한 수익원입니다.',
         '사용자에게 실제 거래 비용은 수수료 + 스프레드입니다. Omni에서는 스프레드만 남습니다.',
+        'Lucas Schuermann(2026년 10월 20일 X 스페이스)에 따르면 Omni의 하루 거래량은 30억~40억 달러입니다.',
       ],
     },
     deepTech: {
@@ -403,6 +440,8 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Les market makers externes ne peuvent pas extraire de valeur du flow retail (argument repris sur le mur Twitter).',
         'Un seul fill par trade grâce au RFQ : pas de « walk the book » sur les grosses tailles.',
         '575+ marchés dérivés listés (crypto + RWA, long-tail, pré-listings) sans profondeur d’orderbook à subventionner.',
+        'Même infrastructure que Variational Pro : les fournisseurs de liquidité institutionnels de Pro seront aussi intégrés à Omni, pour plus de profondeur et plus de produits.',
+        'Une partie de Pro doit s’ouvrir plus tard aux utilisateurs d’Omni, par exemple les options. La forme exacte n’est pas encore décidée.',
       ],
       en: [
         'The OLP internalises retail flow and only hedges the residual on low-fee venues.',
@@ -410,6 +449,8 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'External market makers cannot extract value from retail flow (argument echoed on the Twitter wall).',
         'One fill per trade thanks to RFQ: no “walking the book” on large sizes.',
         '575+ derivatives markets listed (crypto + RWA, long-tail, pre-listings) with no orderbook depth to subsidise.',
+        'Same infrastructure as Variational Pro: Pro’s institutional liquidity providers will also be integrated into Omni, for more depth and more products.',
+        'Part of Pro is planned to open later to Omni users, options for example. The exact form is not decided yet.',
       ],
       ko: [
         'OLP는 리테일 주문 흐름을 내부화하고, 남는 포지션만 수수료가 낮은 거래소에서 헤지합니다.',
@@ -417,6 +458,8 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         '외부 마켓메이커가 리테일 흐름에서 가치를 빼내지 못합니다(트위터 월에서도 언급된 논점).',
         'RFQ 덕분에 거래당 한 번의 체결: 큰 주문도 호가창을 먹어 들어가지 않습니다.',
         '보조금이 필요한 오더북 없이 575개 이상의 파생상품 마켓 상장(크립토 + RWA, 롱테일, 프리상장).',
+        'Variational Pro와 같은 인프라: Pro의 기관 유동성 공급자들이 Omni에도 통합되어 더 많은 깊이와 상품을 제공합니다.',
+        'Pro의 일부(예: 옵션)는 나중에 Omni 사용자에게도 열릴 예정입니다. 정확한 형태는 아직 정해지지 않았습니다.',
       ],
     },
     flow: {
@@ -430,122 +473,143 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       { label: 'Omni — markets list', url: 'https://omni.variational.io/markets' },
       { label: 'Docs — The Omni Liquidity Provider (OLP)', url: 'https://docs.variational.io/omni/the-omni-liquidity-provider-olp' },
       { label: 'DefiLlama Research — revenue, volume, open interest', url: DEFILLAMA_REPORT },
+      SPACE_SOURCE,
     ],
   },
 
   pro: {
     id: 'pro',
     lead: {
-      fr: 'Pour les institutions : chaque client a son propre coffre on-chain, et sait exactement qui est sa contrepartie.',
-      en: 'For institutions: each client has its own onchain vault and knows exactly who its counterparty is.',
-      ko: '기관용: 고객마다 자체 온체인 금고를 가지며, 거래 상대방이 누구인지 정확히 압니다.',
+      fr: 'Variational Pro amène les dérivés OTC institutionnels on-chain : une plateforme RFQ automatisée et multi-dealers, avec un règlement en stablecoins via des smart contracts.',
+      en: 'Variational Pro brings institutional OTC derivatives onchain: an automated, multi-dealer RFQ platform with settlement in stablecoins through smart contracts.',
+      ko: 'Variational Pro는 기관용 장외(OTC) 파생상품을 온체인으로 가져옵니다. 자동화된 멀티 딜러 RFQ 플랫폼이며, 스마트 컨트랙트를 통해 스테이블코인으로 정산합니다.',
     },
     number: '03',
     accent: '#334155',
     signTitle: 'Variational Pro · OTC',
     title: {
-      fr: 'Variational Pro (OTC institutionnel)',
-      en: 'Variational Pro (institutional OTC)',
-      ko: 'Variational Pro (기관용 OTC)',
+      fr: 'Variational Pro (dérivés OTC institutionnels)',
+      en: 'Variational Pro (institutional OTC derivatives)',
+      ko: 'Variational Pro (기관용 OTC 파생상품)',
     },
     tagline: {
-      fr: 'Le protocole peer-to-peer : pools de settlement isolés, contrepartie explicite.',
-      en: 'The peer-to-peer protocol: isolated settlement pools, explicit counterparty.',
-      ko: 'P2P 프로토콜: 분리된 정산 풀, 명확한 거래 상대방.',
+      fr: 'Du coup de fil au desk à un RFQ multi-dealers réglé on-chain.',
+      en: 'From calling a desk to a multi-dealer RFQ settled onchain.',
+      ko: '데스크에 전화하던 방식에서 온체인으로 정산되는 멀티 딜러 RFQ로.',
     },
     beginner: {
       fr: [
-        'Variational Pro s’adresse aux institutions et aux traders OTC, en s’appuyant sur le Variational Protocol (peer-to-peer).',
-        'Chaque utilisateur a son propre pool de settlement : un smart contract d’escrow isolé entre lui et sa contrepartie (l’OLP).',
-        'Pas de mélange des fonds : la faillite d’un pool n’affecte pas les autres, et les dépôts ne sont pas réhypothéqués.',
-        'Lancement de Variational Pro en 2027.',
+        'Omni est le produit retail actuel de Variational (perps et swaps sur des sous-jacents crypto et TradFi). Pro est consacré aux dérivés OTC institutionnels : il est « primarily targeted at institutions » qui tradent aujourd’hui via des flux manuels.',
+        'Produits visés : dérivés de taux, FX, crédit (CDS), options, produits structurés et trades d’options multi-jambes.',
+        'Le problème : beaucoup de ces marchés, surtout en Asie, ne passent ni par une bourse ni par un système électronique. On appelle un desk, le prix vient d’un seul interlocuteur, puis viennent DocuSign, les confirmations par email, le règlement à T+2 et les appels de marge manuels.',
+        'Avec Pro, l’institution décrit le produit, envoie une demande et reçoit des cotations d’autres institutions. Après acceptation, la marge, le clearing et le règlement sont gérés on-chain.',
+        'Calendrier : 2027 marquera « our first few steps towards bringing institutional derivatives and OTC on chain ». Date exacte de lancement : non vérifiée.',
       ],
       en: [
-        'Variational Pro targets institutions and OTC traders, built on the Variational Protocol (peer-to-peer).',
-        'Each user has their own settlement pool: an isolated escrow smart contract between them and their counterparty (the OLP).',
-        'No commingling: one pool failing does not affect the others, and deposits are not rehypothecated.',
-        'Variational Pro launches in 2027.',
+        'Omni is Variational’s current retail product (perps and swaps on crypto and TradFi underlyings). Pro is dedicated to institutional OTC derivatives: it is “primarily targeted at institutions” that trade through manual workflows today.',
+        'Target products: rates derivatives, FX, credit (CDS), options, structured products and multi-leg options trades.',
+        'The problem: many of these markets, especially in Asia, run through neither an exchange nor an electronic system. You call a desk, the price comes from a single counterparty, then come DocuSign, email confirmations, T+2 settlement and manual margin calls.',
+        'With Pro, the institution describes the product, sends a request and receives quotes from other institutions. Once accepted, margin, clearing and settlement are handled onchain.',
+        'Timeline: 2027 will be “our first few steps towards bringing institutional derivatives and OTC on chain”. Exact launch date: unverified.',
       ],
       ko: [
-        'Variational Pro는 기관과 OTC 트레이더를 위한 서비스로, P2P 방식의 Variational Protocol 위에 구축됩니다.',
-        '사용자마다 자신만의 정산 풀이 있습니다. 사용자와 거래 상대방(OLP) 사이의 분리된 에스크로 스마트 컨트랙트입니다.',
-        '자금이 섞이지 않습니다. 한 풀의 파산이 다른 풀에 영향을 주지 않으며, 예치금은 재담보(rehypothecation)되지 않습니다.',
-        'Variational Pro는 2027년에 출시됩니다.',
+        'Omni는 Variational의 현재 리테일 상품입니다(크립토와 TradFi 기초자산의 무기한 선물과 스왑). Pro는 기관용 OTC 파생상품 전용이며, “primarily targeted at institutions”, 즉 현재 수작업 흐름으로 거래하는 기관을 주요 대상으로 합니다.',
+        '대상 상품: 금리 파생상품, 외환(FX), 신용(CDS), 옵션, 구조화 상품, 멀티 레그 옵션 거래.',
+        '문제점: 이런 시장의 상당수, 특히 아시아 시장은 거래소도 전자 시스템도 거치지 않습니다. 데스크에 전화하면 단 한 곳의 상대방이 가격을 주고, 이어서 DocuSign, 이메일 확인, T+2 결제, 수작업 마진콜이 뒤따릅니다.',
+        'Pro에서는 기관이 상품을 설명하고 요청을 보내면 다른 기관들로부터 호가를 받습니다. 수락 후에는 마진, 청산(clearing), 결제가 온체인에서 처리됩니다.',
+        '일정: 2027년은 “our first few steps towards bringing institutional derivatives and OTC on chain”(기관 파생상품과 OTC를 온체인으로 가져오는 첫걸음)이 됩니다. 정확한 출시일: 미확인.',
       ],
     },
     deepTech: {
       fr: [
-        'Pool bilatéral User ↔ OLP par utilisateur : pas de contagion, pas de réhypothécation, contrepartie connue.',
-        'L’OLP n’envoie jamais les fonds des traders vers des venues externes : il hedge uniquement avec son propre capital.',
-        'Nuance importante : si l’OLP devient insolvable, le PnL non settlé du trader devient de la bad debt. Le risque est isolé et transparent, pas éliminé.',
-        'Architecture OLP (docs) : Vault, Market Making Engine, Risk Management System, connectés à Omni et au Variational Protocol, avec un oracle de prix dédié.',
+        'Flux Pro : l’institution décrit le produit → demande RFQ → cotations d’autres institutions → à l’acceptation, un settlement pool est créé (les mêmes pools que sur Omni).',
+        'Le système gère l’ouverture, le pricing, la marge, le clearing et le règlement à l’échéance, on-chain, en stablecoins et via des smart contracts.',
+        'Variational « is not an exchange » : c’est une plateforme technologique (négociation RFQ + settlement/clearing) pensée pour s’insérer dans les flux existants et compatible avec ISDA.',
+        'Pro et Omni partagent exactement la même infrastructure. Les fournisseurs de liquidité institutionnels de Pro seront aussi intégrés à Omni : plus de profondeur et plus de produits pour le retail.',
+        'Une partie de Pro est prévue pour être ouverte plus tard aux utilisateurs d’Omni, par exemple les options. La forme exacte n’est pas encore décidée.',
+        'Partenaires : il y en a des deux côtés, liquidité et premiers clients (« design partners »). Aucun nom n’est encore partagé ; Lucas annonce « some pretty big clients on pro very soon ».',
+        'Contexte marché (ordres de grandeur cités par Lucas) : environ 850 000 milliards de dollars d’encours de dérivés OTC (chiffre d’il y a environ un an), environ 100 milliards de dollars d’open interest sur les dérivés Bitcoin, et un FX qui tourne à « probably 10 trillion a day ».',
+        'Non vérifié, rien n’a été annoncé : date exacte de lancement, noms des partenaires, frais de Pro, conditions d’accès et KYC.',
       ],
       en: [
-        'One bilateral User ↔ OLP pool per user: no contagion, no rehypothecation, known counterparty.',
-        'The OLP never sends traders’ funds to external venues: it hedges only with its own capital.',
-        'Important nuance: if the OLP became insolvent, the trader’s unsettled PnL would become bad debt. The risk is isolated and transparent, not eliminated.',
-        'OLP architecture (docs): Vault, Market Making Engine, Risk Management System, connected to Omni and the Variational Protocol, with a dedicated pricing oracle.',
+        'Pro flow: the institution describes the product → RFQ request → quotes from other institutions → on acceptance, a settlement pool is created (the same pools as on Omni).',
+        'The system handles opening, pricing, margin, clearing and settlement at maturity, onchain, in stablecoins and through smart contracts.',
+        'Variational “is not an exchange”: it is a technology platform (RFQ negotiation + settlement/clearing) designed to fit into existing workflows and compatible with ISDA.',
+        'Pro and Omni share exactly the same infrastructure. Pro’s institutional liquidity providers will also be integrated into Omni: more depth and more products for retail.',
+        'Part of Pro is planned to open later to Omni users, options for example. The exact form is not decided yet.',
+        'Partners: there are partners on both sides, liquidity and early clients (“design partners”). No names are shared yet; Lucas mentions “some pretty big clients on pro very soon”.',
+        'Market context (orders of magnitude cited by Lucas): about $850 trillion of outstanding OTC derivatives (a figure from about a year ago), about $100 billion of open interest in Bitcoin derivatives, and FX running at “probably 10 trillion a day”.',
+        'Unverified, nothing announced: exact launch date, partner names, Pro fees, access conditions and KYC.',
       ],
       ko: [
-        '사용자마다 하나의 양자간 User ↔ OLP 풀: 전염 위험 없음, 재담보 없음, 알려진 거래 상대방.',
-        'OLP는 트레이더의 자금을 외부 거래소로 보내지 않으며, 자체 자본으로만 헤지합니다.',
-        '중요한 단서: OLP가 지급 불능이 되면 트레이더의 미정산 손익은 부실 채권(bad debt)이 됩니다. 위험은 제거된 것이 아니라 분리되고 투명해진 것입니다.',
-        'OLP 아키텍처(문서): Vault, Market Making Engine, Risk Management System이 Omni 및 Variational Protocol과 연결되며 전용 가격 오라클을 사용합니다.',
+        'Pro 흐름: 기관이 상품을 설명 → RFQ 요청 → 다른 기관들의 호가 → 수락 시 정산 풀(settlement pool) 생성 (Omni와 같은 풀).',
+        '시스템이 포지션 개시, 가격 산정, 마진, 청산, 만기 결제를 온체인에서 스테이블코인과 스마트 컨트랙트로 처리합니다.',
+        'Variational은 “is not an exchange”, 즉 거래소가 아닙니다. 기존 업무 흐름에 들어가도록 설계되고 ISDA와 호환되는 기술 플랫폼(RFQ 협상 + 정산/청산)입니다.',
+        'Pro와 Omni는 완전히 같은 인프라를 공유합니다. Pro의 기관 유동성 공급자들은 Omni에도 통합되어 리테일에 더 많은 깊이와 상품을 제공합니다.',
+        'Pro의 일부(예: 옵션)는 나중에 Omni 사용자에게도 열릴 예정입니다. 정확한 형태는 아직 정해지지 않았습니다.',
+        '파트너: 유동성과 초기 고객(“design partners”) 양쪽에 파트너가 있습니다. 아직 이름은 공개되지 않았으며, Lucas는 “some pretty big clients on pro very soon”이라고 말했습니다.',
+        '시장 규모(Lucas가 언급한 대략적 수치): 장외 파생상품 잔액 약 850조 달러(약 1년 전 수치), 비트코인 파생상품 미결제약정 약 1,000억 달러, 외환(FX) 거래 “probably 10 trillion a day”(하루 약 10조 달러).',
+        '미확인, 발표된 내용 없음: 정확한 출시일, 파트너 이름, Pro 수수료, 이용 조건과 KYC.',
       ],
     },
     flow: {
-      fr: ['Dépôt utilisateur', 'Pool de settlement isolé', 'Trade RFQ avec l’OLP', 'Settlement on-chain (Arbitrum)'],
-      en: ['User deposit', 'Isolated settlement pool', 'RFQ trade with the OLP', 'Onchain settlement (Arbitrum)'],
-      ko: ['사용자 예치', '분리된 정산 풀', 'OLP와 RFQ 거래', '온체인 정산 (Arbitrum)'],
+      fr: ['Institution : décrit le produit', 'Demande RFQ multi-dealers', 'Cotations d’autres institutions', 'Acceptation → settlement pool', 'Marge, clearing, règlement on-chain'],
+      en: ['Institution: describes the product', 'Multi-dealer RFQ request', 'Quotes from other institutions', 'Acceptance → settlement pool', 'Margin, clearing, onchain settlement'],
+      ko: ['기관: 상품 설명', '멀티 딜러 RFQ 요청', '다른 기관들의 호가', '수락 → 정산 풀', '마진, 청산, 온체인 결제'],
     },
     table: {
       caption: {
-        fr: 'Peer-to-peer vs modèle exchange',
-        en: 'Peer-to-peer vs exchange model',
-        ko: 'P2P 모델 vs 거래소 모델',
+        fr: 'OTC aujourd’hui vs avec Variational Pro',
+        en: 'OTC today vs with Variational Pro',
+        ko: '현재의 OTC vs Variational Pro',
       },
       columns: {
-        fr: ['Modèle peer-to-peer', 'Modèle exchange'],
-        en: ['Peer to peer model', 'Exchange model'],
-        ko: ['P2P 모델', '거래소 모델'],
+        fr: ['OTC aujourd’hui (flux manuels)', 'Avec Variational Pro'],
+        en: ['OTC today (manual workflows)', 'With Variational Pro'],
+        ko: ['현재의 OTC (수작업 흐름)', 'Variational Pro 사용 시'],
       },
       rows: [
         {
-          label: { fr: 'Fonds utilisateurs', en: 'User funds', ko: '사용자 자금' },
+          label: { fr: 'Prix', en: 'Price', ko: '가격' },
           values: {
-            fr: ['Isolés et ségrégués dans des settlement pools', 'Mélangés dans un seul pool'],
-            en: ['Isolated and segregated into settlement pools', 'Commingled into one pool'],
-            ko: ['정산 풀에 분리·격리', '하나의 풀에 혼합'],
+            fr: ['Un seul interlocuteur, en appelant un desk', 'Cotations de plusieurs institutions via RFQ'],
+            en: ['A single counterparty, by calling a desk', 'Quotes from several institutions via RFQ'],
+            ko: ['데스크에 전화해 단 한 곳의 상대방에게서', 'RFQ로 여러 기관의 호가'],
           },
         },
         {
-          label: { fr: 'Découverte de liquidité', en: 'Liquidity discovery', ko: '유동성 발견' },
+          label: { fr: 'Contrat et confirmations', en: 'Contract and confirmations', ko: '계약과 확인' },
           values: {
-            fr: ['Request-for-quote', 'Central limit orderbook (CLOB)'],
-            en: ['Request-for-quote', 'Central limit orderbook (CLOB)'],
-            ko: ['견적 요청 (RFQ)', '중앙 지정가 오더북 (CLOB)'],
+            fr: ['DocuSign et confirmations par email', 'Ouverture et pricing gérés par le système'],
+            en: ['DocuSign and email confirmations', 'Opening and pricing handled by the system'],
+            ko: ['DocuSign과 이메일 확인', '시스템이 개시와 가격 산정을 처리'],
           },
         },
         {
-          label: { fr: 'Contrepartie', en: 'Counterparty', ko: '거래 상대방' },
+          label: { fr: 'Marge', en: 'Margin', ko: '마진' },
           values: {
-            fr: ['Contrepartie explicite de l’autre côté du trade', 'Contrepartie anonyme sur l’orderbook'],
-            en: ['Explicit counterparty who is on other side of trade', 'Anonymous counterparty on the orderbooks'],
-            ko: ['거래 반대편의 명시적 상대방', '오더북 상의 익명 상대방'],
+            fr: ['Appels de marge manuels', 'Marge gérée on-chain'],
+            en: ['Manual margin calls', 'Margin handled onchain'],
+            ko: ['수작업 마진콜', '온체인에서 마진 관리'],
+          },
+        },
+        {
+          label: { fr: 'Règlement', en: 'Settlement', ko: '결제' },
+          values: {
+            fr: ['T+2', 'Clearing et règlement on-chain, en stablecoins'],
+            en: ['T+2', 'Onchain clearing and settlement, in stablecoins'],
+            ko: ['T+2', '스테이블코인으로 온체인 청산 및 결제'],
           },
         },
       ],
-      source: {
-        label: 'Docs Variational — P2P Trading Protocol vs DEX',
-        url: 'https://docs.variational.io/variational-protocol/key-concepts/p2p-trading-protocol-vs-dex',
-      },
+      source: SPACE_SOURCE,
     },
-    quotes: [Q_REHYPO, Q_NO_COUNTER, Q_BROKER],
-    videoIds: ['bankless-funds', 'gwart-rfq'],
+    quotes: [Q_PRO_INSTITUTIONS, Q_NOT_EXCHANGE, Q_PRO_FIRST_STEPS, Q_PRO_LARGER],
+    videoIds: ['rollup-series-a', 'bankless-funds'],
     sources: [
+      SPACE_SOURCE,
       { label: 'Docs — Settlement Pools', url: 'https://docs.variational.io/variational-protocol/key-concepts/settlement-pools' },
-      { label: 'Docs — P2P trading protocol vs DEX', url: 'https://docs.variational.io/variational-protocol/key-concepts/p2p-trading-protocol-vs-dex' },
-      { label: 'DefiLlama Research — How Variational Pro works', url: DEFILLAMA_REPORT },
+      { label: 'Omni — app', url: 'https://omni.variational.io' },
     ],
   },
 
@@ -596,6 +660,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Funding asymétrique : les longs et les shorts paient des taux annualisés différents (ex. 4,89 % L / 2,89 % S sur les indices US, 5,85 % L / 2,57 % S sur l’or), reflet du coût de couverture de l’OLP.',
         'Certains marchés affichent un funding annualisé négatif (USOIL −17,13 %, UKOIL −34,34 %) : vérifie le sens du paiement sur l’interface Omni avant d’ouvrir une position.',
         'Le tableau « Swaps en direct » de cet onglet est chargé depuis l’API publique Variational (marchés « Swap on … »).',
+        'D’après Lucas Schuermann (Space X du 20 oct. 2026), les swaps font « 70 or 80% » du volume quotidien « on a lot of products », et une grosse roadmap de nouveaux listings de swaps arrive.',
       ],
       en: [
         'Volume traction: on Blockworks’ weekly “Perp DEXs: RWA – Futures Notional Volume” chart, Variational’s share rises to roughly $13B per week in late September – October 2026, second only to Trade[XYZ].',
@@ -603,6 +668,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Asymmetric funding: longs and shorts pay different annualised rates (e.g. 4.89% L / 2.89% S on US indices, 5.85% L / 2.57% S on gold), reflecting the OLP’s hedging cost.',
         'Some markets show negative annualised funding (USOIL −17.13%, UKOIL −34.34%): check which side pays on the Omni interface before opening a position.',
         'The “Live swaps” table in this tab is loaded from the public Variational API (“Swap on …” markets).',
+        'According to Lucas Schuermann (X Space, 20 Oct 2026), swaps make up “70 or 80%” of daily volume “on a lot of products”, and a big roadmap of new swap listings is coming.',
       ],
       ko: [
         '거래량 견인력: Blockworks의 주간 차트 “Perp DEXs: RWA – Futures Notional Volume”에서 Variational의 비중은 2026년 9월 말~10월 주당 약 130억 달러로 Trade[XYZ]에 이어 2위입니다.',
@@ -610,6 +676,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         '비대칭 펀딩: 롱과 숏의 연환산 펀딩이 다릅니다(예: 미국 지수 4.89% L / 2.89% S, 금 5.85% L / 2.57% S). OLP의 헤지 비용을 반영합니다.',
         '일부 마켓은 음수 연환산 펀딩을 표시합니다(USOIL −17.13%, UKOIL −34.34%). 포지션을 열기 전에 Omni 화면에서 지급 방향을 확인하세요.',
         '이 탭의 “실시간 스왑” 표는 Variational 공개 API(“Swap on …” 마켓)에서 불러옵니다.',
+        'Lucas Schuermann(2026년 10월 20일 X 스페이스)에 따르면 스왑은 “on a lot of products”(많은 상품에서) 일일 거래량의 “70 or 80%”를 차지하며, 새로운 스왑 상장 로드맵이 대규모로 준비되어 있습니다.',
       ],
     },
     flow: {
@@ -623,6 +690,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       { label: 'Omni — markets list', url: 'https://omni.variational.io/markets' },
       { label: 'Variational API — /metadata/stats', url: 'https://omni-client-api.prod.ap-northeast-1.variational.io/metadata/stats' },
       { label: 'Docs — Trading via RFQ', url: 'https://docs.variational.io/variational-protocol/key-concepts/trading-via-rfq' },
+      SPACE_SOURCE,
     ],
   },
 
@@ -630,16 +698,16 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
     id: 'tokenomics',
     number: '04',
     accent: '#7c3aed',
-    signTitle: 'Tokenomics · $VAR TGE Q4 2026',
+    signTitle: 'Tokenomics · $VAR TGE Soon',
     title: {
       fr: 'Tokenomics $VAR & Points',
       en: '$VAR Tokenomics & Points',
       ko: '$VAR 토크노믹스 & 포인트',
     },
     tagline: {
-      fr: 'Distribution, déblocages et buy & burn du token $VAR — TGE au Q4 2026.',
-      en: 'Distribution, unlocks and buy & burn of the $VAR token — TGE in Q4 2026.',
-      ko: '$VAR 토큰의 분배, 언락, 바이백 & 소각 — 2026년 4분기 TGE.',
+      fr: 'Distribution, déblocages et buy & burn du token $VAR — TGE « coming very soon ».',
+      en: 'Distribution, unlocks and buy & burn of the $VAR token — TGE “coming very soon”.',
+      ko: '$VAR 토큰의 분배, 언락, 바이백 & 소각 — TGE “coming very soon”.',
     },
     lead: {
       fr: 'Tes points Omni deviennent des $VAR au TGE : 32 % de la supply revient aux utilisateurs, et 100 % des revenus de trésorerie rachètent et brûlent le token.',
@@ -648,22 +716,25 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
     },
     beginner: {
       fr: [
-        'Le token $VAR sera lancé lors du TGE (Token Generation Event), prévu au Q4 2026.',
+        'Le token $VAR sera lancé lors du TGE (Token Generation Event), « coming very soon » selon Lucas Schuermann (Space X du 20 oct. 2026). Le Q4 a été évoqué par l’animateur, sans date confirmée : non vérifié.',
         'Genesis Distribution : 32 % de la supply sont distribués en airdrop, en proportion des points accumulés, et 100 % débloqués dès le TGE. Il faut au moins 1 point pour signer les conditions d’utilisation (ToS).',
         'Jusqu’au TGE, 150 000 points sont distribués chaque semaine aux traders d’Omni.',
         'Buy & burn : 100 % des revenus de la trésorerie servent à racheter du $VAR sur le marché puis à le détruire.',
+        'L’équipe veut un token $VAR le plus liquide possible, sur la plateforme et sur de nombreux autres marchés.',
       ],
       en: [
-        'The $VAR token launches at the TGE (Token Generation Event), planned for Q4 2026.',
+        'The $VAR token launches at the TGE (Token Generation Event), “coming very soon” according to Lucas Schuermann (X Space, 20 Oct 2026). Q4 was mentioned by the host, with no confirmed date: unverified.',
         'Genesis Distribution: 32% of supply is airdropped in proportion to accumulated points, 100% unlocked at TGE. At least 1 point is required to sign the Terms of Service (ToS).',
         'Until TGE, 150,000 points are distributed every week to Omni traders.',
         'Buy & burn: 100% of treasury revenue is used to buy $VAR back on the market and destroy it.',
+        'The team wants the $VAR token to be as liquid as possible, on the platform and on many other markets.',
       ],
       ko: [
-        '$VAR 토큰은 2026년 4분기로 예정된 TGE(토큰 생성 이벤트)에서 출시됩니다.',
+        '$VAR 토큰은 TGE(토큰 생성 이벤트)에서 출시되며, Lucas Schuermann에 따르면 “coming very soon”입니다(2026년 10월 20일 X 스페이스). 4분기는 진행자가 언급했을 뿐 확정된 날짜가 없습니다: 미확인.',
         'Genesis Distribution: 공급량의 32%가 누적 포인트에 비례해 에어드랍되며 TGE 시점에 100% 언락됩니다. 이용약관(ToS) 서명에는 최소 1포인트가 필요합니다.',
         'TGE 전까지 매주 150,000 포인트가 Omni 트레이더에게 분배됩니다.',
         '바이백 & 소각: 재무 수익의 100%로 시장에서 $VAR를 사들여 소각합니다.',
+        '팀은 $VAR 토큰이 플랫폼과 다른 여러 시장에서 최대한 높은 유동성을 갖기를 원합니다.',
       ],
     },
     deepTech: {
@@ -674,6 +745,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Buy & Burn : 100 % des revenus de la trésorerie alloués au rachat et à la destruction de $VAR.',
         'Revenus : le spread capté par l’OLP (trading à 0 % de fees). Revenu net sur 2 semaines : 3 682 137 $ ; trésorerie : 11 077 933 USDC (oct. 2026).',
         'Simulateur FDV : le barème du café correspond à environ 11,2 M de points pour 32 % de la supply (ex. FDV 1 Md$ → ≈ 28,6 $ par point). Simulation théorique, pas une prévision.',
+        'Space X du 20 oct. 2026 : aucun nouveau détail n’a été annoncé sur l’airdrop, les points ou le mécanisme de value accrual du token.',
       ],
       en: [
         'Genesis Distribution [32%]: airdrop proportional to points, 100% unlocked at TGE (minimum 1 point to sign the ToS).',
@@ -682,6 +754,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Buy & Burn: 100% of treasury revenue allocated to buying back and destroying $VAR.',
         'Revenue: the spread captured by the OLP (0% fee trading). 2-week net revenue: $3,682,137; treasury: 11,077,933 USDC (Oct 2026).',
         'FDV simulator: the café price list implies about 11.2M points for 32% of supply (e.g. $1B FDV → ≈ $28.6 per point). Theoretical simulation, not a forecast.',
+        'X Space, 20 Oct 2026: no new details were announced on the airdrop, points or the token’s value accrual mechanism.',
       ],
       ko: [
         'Genesis Distribution [32%]: 포인트에 비례한 에어드랍, TGE 시 100% 언락 (ToS 서명에 최소 1포인트).',
@@ -690,18 +763,20 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Buy & Burn: 재무 수익의 100%를 $VAR 바이백 및 소각에 사용합니다.',
         '수익: OLP가 얻는 스프레드(거래 수수료 0%). 2주 순수익 3,682,137달러, 재무 보유액 11,077,933 USDC (2026년 10월).',
         'FDV 시뮬레이터: 카페 가격표는 공급량 32%에 약 1,120만 포인트를 가정합니다(예: FDV 10억 달러 → 포인트당 약 28.6달러). 이론적 시뮬레이션이며 예측이 아닙니다.',
+        '2026년 10월 20일 X 스페이스: 에어드랍, 포인트, 토큰 가치 귀속(value accrual) 메커니즘에 대한 새로운 세부 사항은 발표되지 않았습니다.',
       ],
     },
     flow: {
-      fr: ['Trade sur Omni (0 % fees)', '150k points / semaine', 'TGE $VAR Q4 2026 : airdrop 32 %', 'Revenus → buy & burn'],
-      en: ['Trade on Omni (0% fees)', '150k points / week', '$VAR TGE Q4 2026: 32% airdrop', 'Revenue → buy & burn'],
-      ko: ['Omni 거래 (수수료 0%)', '주당 15만 포인트', '$VAR TGE 2026년 4분기: 32% 에어드랍', '수익 → 바이백 & 소각'],
+      fr: ['Trade sur Omni (0 % fees)', '150k points / semaine', 'TGE $VAR (« very soon ») : airdrop 32 %', 'Revenus → buy & burn'],
+      en: ['Trade on Omni (0% fees)', '150k points / week', '$VAR TGE (“very soon”): 32% airdrop', 'Revenue → buy & burn'],
+      ko: ['Omni 거래 (수수료 0%)', '주당 15만 포인트', '$VAR TGE (“very soon”): 32% 에어드랍', '수익 → 바이백 & 소각'],
     },
     quotes: [Q_FEES],
     videoIds: ['wsh-fees-scam', 'rollup-series-a'],
     sources: [
       { label: 'Omni — app', url: 'https://omni.variational.io' },
       { label: 'Variational — X (@variational_io)', url: 'https://x.com/variational_io' },
+      SPACE_SOURCE,
     ],
   },
 
@@ -721,28 +796,31 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       ko: '오더북 없이 전통 금융의 유동성을 온체인으로.',
     },
     lead: {
-      fr: 'Variational veut devenir le broker on-chain de référence : agréger la liquidité mondiale plutôt que la reconstruire, pour la crypto comme pour la finance traditionnelle.',
-      en: 'Variational aims to be the reference onchain broker: aggregating global liquidity instead of rebuilding it, for crypto and traditional finance alike.',
-      ko: 'Variational은 대표적인 온체인 브로커를 목표로 합니다. 유동성을 새로 만들지 않고 전 세계 유동성을 모아, 크립토와 전통 금융 모두에 제공합니다.',
+      fr: 'Après Omni pour le retail, Variational veut amener les dérivés institutionnels et l’OTC on-chain avec Pro. Pour Lucas Schuermann, « Pro will eventually be the larger business ».',
+      en: 'After Omni for retail, Variational wants to bring institutional derivatives and OTC onchain with Pro. For Lucas Schuermann, “Pro will eventually be the larger business”.',
+      ko: '리테일용 Omni에 이어, Variational은 Pro로 기관 파생상품과 OTC를 온체인으로 가져오려 합니다. Lucas Schuermann은 “Pro will eventually be the larger business”(결국 Pro가 더 큰 사업이 될 것)라고 말합니다.',
     },
     beginner: {
       fr: [
-        'Le pari : un modèle de broker (RFQ + un fournisseur de liquidité intégré) plutôt qu’un exchange à carnet d’ordres.',
-        'Aujourd’hui : Omni, 0 % de frais, 575+ marchés dont des indices, matières premières et devises en swaps.',
-        'Prochaine étape : le TGE du token $VAR au Q4 2026, avec 100 % des revenus de trésorerie alloués au buy & burn.',
-        'Ensuite : Variational Pro, l’offre OTC pour institutions sur le protocole peer-to-peer, lancée en 2027.',
+        'Le pari : un modèle de broker (RFQ + un fournisseur de liquidité intégré) plutôt qu’un exchange à carnet d’ordres. Variational « is not an exchange ».',
+        'Aujourd’hui : Omni, le produit retail (perps et swaps crypto et TradFi), 0 % de frais, 575+ marchés, 3 à 4 milliards de dollars par jour.',
+        'Avant Pro : le public mainnet, l’API (« coming soon »), le TGE du token $VAR (« coming very soon ») et une grosse roadmap de nouveaux listings de swaps.',
+        'Ensuite, 2027 : « our first few steps towards bringing institutional derivatives and OTC on chain » avec Variational Pro. Date exacte : non vérifiée.',
+        'D’autres annonces sont prévues « in the coming few weeks and months ».',
       ],
       en: [
-        'The bet: a broker model (RFQ + one integrated liquidity provider) rather than an order-book exchange.',
-        'Today: Omni, 0% fees, 575+ markets including indices, commodities and FX as swaps.',
-        'Next: the $VAR TGE in Q4 2026, with 100% of treasury revenue going to buy & burn.',
-        'Then: Variational Pro, the institutional OTC offering on the peer-to-peer protocol, launching in 2027.',
+        'The bet: a broker model (RFQ + one integrated liquidity provider) rather than an order-book exchange. Variational “is not an exchange”.',
+        'Today: Omni, the retail product (crypto and TradFi perps and swaps), 0% fees, 575+ markets, $3 to 4 billion a day.',
+        'Before Pro: public mainnet, the API (“coming soon”), the $VAR token TGE (“coming very soon”) and a big roadmap of new swap listings.',
+        'Then, 2027: “our first few steps towards bringing institutional derivatives and OTC on chain” with Variational Pro. Exact date: unverified.',
+        'More announcements are planned “in the coming few weeks and months”.',
       ],
       ko: [
-        '핵심 전략: 오더북 거래소가 아닌 브로커 모델(RFQ + 통합 유동성 공급자).',
-        '현재: Omni, 수수료 0%, 지수·원자재·외환 스왑을 포함한 575개 이상의 마켓.',
-        '다음: 2026년 4분기 $VAR TGE, 재무 수익 100% 바이백 & 소각.',
-        '그다음: P2P 프로토콜 기반 기관용 OTC 서비스 Variational Pro (2027년 출시).',
+        '핵심 전략: 오더북 거래소가 아닌 브로커 모델(RFQ + 통합 유동성 공급자). Variational은 “is not an exchange”, 즉 거래소가 아닙니다.',
+        '현재: 리테일 상품 Omni(크립토와 TradFi 무기한 선물·스왑), 수수료 0%, 575개 이상의 마켓, 하루 30억~40억 달러.',
+        'Pro 이전: 퍼블릭 메인넷, API(“coming soon”), $VAR 토큰 TGE(“coming very soon”), 대규모 신규 스왑 상장 로드맵.',
+        '그다음 2027년: Variational Pro와 함께 “our first few steps towards bringing institutional derivatives and OTC on chain”(기관 파생상품과 OTC를 온체인으로 가져오는 첫걸음). 정확한 날짜: 미확인.',
+        '추가 발표가 “in the coming few weeks and months”(앞으로 몇 주, 몇 달 안에) 예정되어 있습니다.',
       ],
     },
     deepTech: {
@@ -751,27 +829,36 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Pourquoi des pools isolés : chaque utilisateur a son pool de settlement bilatéral, sans réhypothécation — une base adaptée aux exigences des institutions.',
         'Pourquoi le buy & burn : relier directement les revenus du protocole (le spread) au token $VAR.',
         'Signal de marché : la part de Variational dans le volume RWA des perp DEX progresse fortement fin 2026 (graphique Blockworks).',
+        'Pourquoi Pro : Omni et Pro partagent exactement la même infrastructure, et les fournisseurs de liquidité institutionnels de Pro seront aussi intégrés à Omni.',
+        'Taille du marché visé (ordres de grandeur cités par Lucas) : environ 850 000 milliards de dollars d’encours de dérivés OTC (chiffre d’il y a environ un an), environ 100 milliards de dollars d’open interest sur les dérivés Bitcoin, et un FX à « probably 10 trillion a day ».',
+        'Repère : 400 milliards de dollars compensés depuis le lancement du protocole.',
       ],
       en: [
         'Why RFQ: listing a new asset needs neither market-maker subsidies nor per-market book depth — which is what makes expanding into RWAs possible.',
         'Why isolated pools: each user has its own bilateral settlement pool, with no rehypothecation — a base suited to institutional requirements.',
         'Why buy & burn: to tie protocol revenue (the spread) directly to the $VAR token.',
         'Market signal: Variational’s share of perp DEX RWA volume rises sharply in late 2026 (Blockworks chart).',
+        'Why Pro: Omni and Pro share exactly the same infrastructure, and Pro’s institutional liquidity providers will also be integrated into Omni.',
+        'Target market size (orders of magnitude cited by Lucas): about $850 trillion of outstanding OTC derivatives (a figure from about a year ago), about $100 billion of open interest in Bitcoin derivatives, and FX at “probably 10 trillion a day”.',
+        'Milestone: $400 billion cleared since the protocol launched.',
       ],
       ko: [
         'RFQ인 이유: 새 자산 상장에 마켓메이커 보조금도, 마켓별 오더북 깊이도 필요 없어 RWA로의 확장이 가능합니다.',
         '분리된 풀인 이유: 사용자마다 재담보 없는 양자간 정산 풀을 가져 기관의 요구에 맞는 기반이 됩니다.',
         '바이백 & 소각인 이유: 프로토콜 수익(스프레드)을 $VAR 토큰과 직접 연결합니다.',
         '시장 신호: 2026년 말 무기한 DEX RWA 거래량에서 Variational의 비중이 크게 늘었습니다(Blockworks 차트).',
+        'Pro인 이유: Omni와 Pro는 완전히 같은 인프라를 공유하며, Pro의 기관 유동성 공급자들은 Omni에도 통합됩니다.',
+        '목표 시장 규모(Lucas가 언급한 대략적 수치): 장외 파생상품 잔액 약 850조 달러(약 1년 전 수치), 비트코인 파생상품 미결제약정 약 1,000억 달러, 외환(FX) “probably 10 trillion a day”(하루 약 10조 달러).',
+        '이정표: 프로토콜 출시 이후 4,000억 달러 청산.',
       ],
     },
     timeline: [
       {
         when: { fr: 'Aujourd’hui', en: 'Today', ko: '현재' },
         what: {
-          fr: 'Omni sur Arbitrum : 0 % de frais, 575+ marchés crypto & RWA, swaps TradFi.',
-          en: 'Omni on Arbitrum: 0% fees, 575+ crypto & RWA markets, TradFi swaps.',
-          ko: 'Arbitrum 기반 Omni: 수수료 0%, 575개 이상의 크립토 & RWA 마켓, TradFi 스왑.',
+          fr: 'Omni, le produit retail : perps et swaps crypto & TradFi, 0 % de frais, 575+ marchés, 3 à 4 Md$ par jour.',
+          en: 'Omni, the retail product: crypto & TradFi perps and swaps, 0% fees, 575+ markets, $3–4B a day.',
+          ko: '리테일 상품 Omni: 크립토 & TradFi 무기한 선물과 스왑, 수수료 0%, 575개 이상의 마켓, 하루 30억~40억 달러.',
         },
         status: 'live',
       },
@@ -785,27 +872,46 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         status: 'live',
       },
       {
-        when: { fr: 'Q4 2026', en: 'Q4 2026', ko: '2026년 4분기' },
+        when: { fr: 'Bientôt', en: 'Soon', ko: '곧' },
         what: {
-          fr: 'TGE du token $VAR : airdrop de 32 %, buy & burn avec 100 % des revenus de trésorerie.',
-          en: '$VAR token TGE: 32% airdrop, buy & burn with 100% of treasury revenue.',
-          ko: '$VAR 토큰 TGE: 32% 에어드랍, 재무 수익 100% 바이백 & 소각.',
+          fr: 'Public mainnet, API (« coming soon ») et grosse roadmap de nouveaux listings de swaps.',
+          en: 'Public mainnet, API (“coming soon”) and a big roadmap of new swap listings.',
+          ko: '퍼블릭 메인넷, API(“coming soon”), 대규모 신규 스왑 상장 로드맵.',
+        },
+        status: 'next',
+      },
+      {
+        when: { fr: 'Très bientôt', en: 'Very soon', ko: '아주 곧' },
+        what: {
+          fr: 'TGE du token $VAR (« coming very soon »). Q4 évoqué par l’animateur, date non vérifiée.',
+          en: '$VAR token TGE (“coming very soon”). Q4 mentioned by the host, date unverified.',
+          ko: '$VAR 토큰 TGE(“coming very soon”). 4분기는 진행자가 언급, 날짜 미확인.',
         },
         status: 'next',
       },
       {
         when: { fr: '2027', en: '2027', ko: '2027년' },
         what: {
-          fr: 'Variational Pro : OTC institutionnel sur le protocole peer-to-peer.',
-          en: 'Variational Pro: institutional OTC on the peer-to-peer protocol.',
-          ko: 'Variational Pro: P2P 프로토콜 기반 기관용 OTC.',
+          fr: 'Variational Pro : premiers pas des dérivés institutionnels et de l’OTC on-chain. Date exacte non vérifiée.',
+          en: 'Variational Pro: first steps for institutional derivatives and OTC onchain. Exact date unverified.',
+          ko: 'Variational Pro: 기관 파생상품과 OTC 온체인화의 첫걸음. 정확한 날짜 미확인.',
+        },
+        status: 'later',
+      },
+      {
+        when: { fr: 'Plus tard', en: 'Later', ko: '이후' },
+        what: {
+          fr: 'Une partie de Pro ouverte aux utilisateurs d’Omni, par exemple les options. Forme pas encore décidée.',
+          en: 'Part of Pro opened to Omni users, options for example. Form not decided yet.',
+          ko: 'Pro의 일부(예: 옵션)를 Omni 사용자에게 개방. 형태는 아직 미정.',
         },
         status: 'later',
       },
     ],
-    quotes: [Q_MAIN, Q_AGGREGATING, Q_BROKER],
+    quotes: [Q_PRO_LARGER, Q_PRO_FIRST_STEPS, Q_MAIN, Q_AGGREGATING],
     videoIds: ['rollup-series-a', 'bankless-broker'],
     sources: [
+      SPACE_SOURCE,
       { label: 'DefiLlama Research — Variational report', url: DEFILLAMA_REPORT },
       { label: 'Docs — Settlement Pools', url: 'https://docs.variational.io/variational-protocol/key-concepts/settlement-pools' },
       { label: 'Variational — X (@variational_io)', url: 'https://x.com/variational_io' },
@@ -856,16 +962,19 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Les marchés RWA (indices, matières premières, devises, actions, pré-IPO) sont repérés par une heuristique sur le nom du marché ; le classement est indicatif.',
         'L’open interest historique vient de DefiLlama (un point par semaine) ; le volume et la TVL viennent de l’API Variational.',
         'Les graphiques DefiLlama Research (volume, OI, listings) couvrent la période du 24 janvier au 4 juin 2026.',
+        'Repères donnés par Lucas Schuermann (Space X du 20 oct. 2026) : 400 milliards de dollars compensés depuis le lancement du protocole, et 3 à 4 milliards de dollars par jour sur Omni.',
       ],
       en: [
         'RWA markets (indices, commodities, FX, equities, pre-IPO) are detected with a heuristic on the market name; the split is indicative.',
         'Historical open interest comes from DefiLlama (one point per week); volume and TVL come from the Variational API.',
         'DefiLlama Research charts (volume, OI, listings) cover 24 January to 4 June 2026.',
+        'Milestones given by Lucas Schuermann (X Space, 20 Oct 2026): $400 billion cleared since the protocol launched, and $3 to 4 billion a day on Omni.',
       ],
       ko: [
         'RWA 마켓(지수, 원자재, 외환, 주식, 프리IPO)은 마켓 이름 기반 휴리스틱으로 분류하므로 참고용입니다.',
         '과거 미결제약정은 DefiLlama(주 1회 데이터)에서, 거래량과 TVL은 Variational API에서 가져옵니다.',
         'DefiLlama Research 차트(거래량, OI, 상장 수)는 2026년 1월 24일부터 6월 4일까지를 다룹니다.',
+        'Lucas Schuermann이 밝힌 수치(2026년 10월 20일 X 스페이스): 프로토콜 출시 이후 4,000억 달러 청산, Omni 하루 30억~40억 달러.',
       ],
     },
     quotes: [],
@@ -875,6 +984,7 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
       { label: 'DefiLlama — Variational open interest', url: 'https://defillama.com/protocol/variational' },
       { label: 'DefiLlama Research — Variational report', url: DEFILLAMA_REPORT },
       { label: 'Omni — markets list', url: 'https://omni.variational.io/markets' },
+      SPACE_SOURCE,
     ],
   },
 
@@ -979,16 +1089,16 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
     },
     beginner: {
       fr: [
-        'Par défaut, le grand écran affiche la bannière du Summit. Choisis un extrait ci-dessous et clique sur « Diffuser sur l’écran » pour le lancer (lecture muette automatique), puis « Arrêter » pour revenir à la bannière.',
-        'Pour écouter avec le son, utilise « Regarder ici » ou ouvre la vidéo sur YouTube.',
+        'Par défaut, le grand écran affiche la bannière du Summit. Choisis un extrait ci-dessous et clique sur « Diffuser sur l’écran » : l’écran passe en LIVE et la vidéo se lit avec le son dans le lecteur en bas à droite.',
+        'Ferme le lecteur pour revenir à la bannière. Tu peux aussi utiliser « Regarder ici » ou ouvrir la vidéo sur YouTube.',
       ],
       en: [
-        'By default the big screen shows the Summit banner. Pick a clip below and click “Play on screen” to start it (muted autoplay), then “Stop” to go back to the banner.',
-        'To listen with sound, use “Watch here” or open the video on YouTube.',
+        'By default the big screen shows the Summit banner. Pick a clip below and click “Play on screen”: the screen goes LIVE and the video plays with sound in the player at the bottom right.',
+        'Close the player to go back to the banner. You can also use “Watch here” or open the video on YouTube.',
       ],
       ko: [
-        '기본적으로 대형 스크린에는 Summit 배너가 표시됩니다. 아래에서 클립을 선택해 “스크린에서 재생”을 누르면 재생되고(음소거 자동 재생), “정지”를 누르면 배너로 돌아갑니다.',
-        '소리와 함께 보려면 “여기서 보기”를 누르거나 YouTube에서 여세요.',
+        '기본적으로 대형 스크린에는 Summit 배너가 표시됩니다. 아래에서 클립을 선택해 “스크린에서 재생”을 누르면 스크린이 LIVE로 바뀌고, 오른쪽 아래 플레이어에서 소리와 함께 영상이 재생됩니다.',
+        '플레이어를 닫으면 배너로 돌아갑니다. “여기서 보기”를 누르거나 YouTube에서 열 수도 있습니다.',
       ],
     },
     deepTech: {
@@ -997,18 +1107,21 @@ export const CONTENT: Record<InteractiveId, StandContent> = {
         'Bankless (Robinhood of Onchain Trading) : broker vs exchange, OLP (~34:00), fonds utilisateurs (~37:03).',
         'The Gwart Show : structure de marché (10:45), RWA (13:41), OLP (33:52).',
         'When Shift Happens E186 : zero fees (29:54), « are trading fees a scam? » (34:33).',
+        'Space X officiel du 20 oct. 2026 (Lucas Schuermann, interviewé par Andy de The Rollup) : Variational Pro et l’OTC institutionnel on-chain. Les points clés sont sur les stands Pro et Vision.',
       ],
       en: [
         'Flirting with Models S7E34: 05:45 spreads and zero fees, 09:35 flow segmentation, 27:31 “aggregating”.',
         'Bankless (Robinhood of Onchain Trading): broker vs exchange, OLP (~34:00), user funds (~37:03).',
         'The Gwart Show: market structure (10:45), RWAs (13:41), OLP (33:52).',
         'When Shift Happens E186: zero fees (29:54), “are trading fees a scam?” (34:33).',
+        'Official X Space, 20 Oct 2026 (Lucas Schuermann, interviewed by Andy from The Rollup): Variational Pro and institutional OTC onchain. Key points are on the Pro and Vision stands.',
       ],
       ko: [
         'Flirting with Models S7E34: 05:45 스프레드와 수수료 0%, 09:35 주문 흐름 세분화, 27:31 “aggregating”.',
         'Bankless (Robinhood of Onchain Trading): 브로커 vs 거래소, OLP (~34:00), 사용자 자금 (~37:03).',
         'The Gwart Show: 시장 구조 (10:45), RWA (13:41), OLP (33:52).',
         'When Shift Happens E186: 수수료 0% (29:54), “거래 수수료는 사기인가?” (34:33).',
+        '2026년 10월 20일 공식 X 스페이스(Lucas Schuermann, The Rollup의 Andy 진행): Variational Pro와 온체인 기관 OTC. 핵심 내용은 Pro와 Vision 부스에 있습니다.',
       ],
     },
     quotes: [Q_MAIN, Q_AGGREGATING],
