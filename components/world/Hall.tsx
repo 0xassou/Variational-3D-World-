@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import { MeshReflectorMaterial, Text } from '@react-three/drei';
 import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace } from 'three';
-import { BRAND, HALF_D, HALF_W, HALL } from '@/lib/layout';
+import { BRAND, HALF_D, HALF_W, HALL, seededRandom } from '@/lib/layout';
 import { LogoPlane } from './Logo';
 
 export const FONT_BOLD = '/fonts/inter-latin-800-normal.woff';
@@ -15,27 +15,57 @@ export const FONT_REGULAR = '/fonts/inter-latin-400-normal.woff';
 const WALL_COLOR = '#c4cdd7';
 const TRIM_COLOR = '#97a3b1';
 
-/** Texture de carrelage clair (joints fins) générée sur canvas. */
+/* Carrelage : bloc de 4 × 4 dalles de 2 m, teinte légèrement variable d'une dalle à l'autre. */
+const TILES_PER_SIDE = 4;
+const TILE_METERS = 2;
+const TERRAZZO = ['#8e9aa8', '#7c8898', '#e4e9ef', '#a9b4c1', '#4C9AF8'];
+
+/** Texture de carrelage façon terrazzo (grain fin, joints marqués) générée sur canvas. */
 function useTileTexture() {
   return useMemo(() => {
-    const size = 512;
+    const size = 1024;
+    const tile = size / TILES_PER_SIDE;
+    const rand = seededRandom(42);
     const canvas = document.createElement('canvas');
     canvas.width = size;
     canvas.height = size;
     const ctx = canvas.getContext('2d');
     if (ctx) {
-      ctx.fillStyle = '#bcc6d0';
-      ctx.fillRect(0, 0, size, size);
-      ctx.strokeStyle = '#a3afbc';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(0, 0, size, size);
+      for (let i = 0; i < TILES_PER_SIDE; i++) {
+        for (let j = 0; j < TILES_PER_SIDE; j++) {
+          const shade = Math.round((rand() - 0.5) * 14);
+          ctx.fillStyle = `rgb(${188 + shade}, ${198 + shade}, ${208 + shade})`;
+          ctx.fillRect(i * tile, j * tile, tile, tile);
+        }
+      }
+      // Grain terrazzo : éclats clairs/sombres et quelques rares éclats bleus de la marque.
+      for (let k = 0; k < 9000; k++) {
+        const pick = rand();
+        ctx.globalAlpha = 0.25 + rand() * 0.35;
+        ctx.fillStyle = TERRAZZO[pick > 0.995 ? 4 : Math.floor(rand() * 4)];
+        const r = pick > 0.97 ? 1.6 + rand() * 1.8 : 0.6 + rand() * 0.9;
+        ctx.beginPath();
+        ctx.arc(rand() * size, rand() * size, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = '#97a4b2';
+      ctx.lineWidth = 4;
+      for (let i = 0; i <= TILES_PER_SIDE; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * tile, 0);
+        ctx.lineTo(i * tile, size);
+        ctx.moveTo(0, i * tile);
+        ctx.lineTo(size, i * tile);
+        ctx.stroke();
+      }
     }
     const texture = new CanvasTexture(canvas);
     texture.colorSpace = SRGBColorSpace;
     texture.wrapS = RepeatWrapping;
     texture.wrapT = RepeatWrapping;
-    // Une dalle = 2 m.
-    texture.repeat.set(HALL.width / 2, HALL.depth / 2);
+    const block = TILES_PER_SIDE * TILE_METERS;
+    texture.repeat.set(HALL.width / block, HALL.depth / block);
     texture.anisotropy = 8;
     return texture;
   }, []);

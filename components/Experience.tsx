@@ -11,6 +11,7 @@ import { Amenities } from './world/Amenities';
 import { CeilingDecor } from './world/CeilingDecor';
 import { ClickFlash } from './world/ClickFlash';
 import { Crowd } from './world/Crowd';
+import { FloorDecor } from './world/FloorDecor';
 import { Hall } from './world/Hall';
 import { Interaction } from './world/Interaction';
 import { MetricsStand } from './world/MetricsStand';
@@ -84,6 +85,7 @@ export default function Experience() {
         <Suspense fallback={null}>
           <Physics gravity={[0, -20, 0]}>
             <Hall />
+            <FloorDecor />
             <Stage />
             <Stands />
             <MetricsStand />
