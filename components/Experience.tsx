@@ -9,6 +9,7 @@ import { useWorld } from '@/lib/store';
 import { Player } from './player/Player';
 import { Amenities } from './world/Amenities';
 import { CeilingDecor } from './world/CeilingDecor';
+import { ClickFlash } from './world/ClickFlash';
 import { Crowd } from './world/Crowd';
 import { Hall } from './world/Hall';
 import { Interaction } from './world/Interaction';
@@ -92,6 +93,7 @@ export default function Experience() {
             <Player />
           </Physics>
           <Interaction />
+          <ClickFlash />
           <Ready />
         </Suspense>
       </Canvas>

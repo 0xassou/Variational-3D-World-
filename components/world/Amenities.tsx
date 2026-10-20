@@ -5,7 +5,9 @@ import { CuboidCollider, CylinderCollider, RigidBody } from '@react-three/rapier
 import { CONTENT } from '@/lib/content';
 import { t } from '@/lib/i18n';
 import { BRAND, interactivePoint, TWITTER_WALL } from '@/lib/layout';
-import { accessUrl, CEO_URL, openExternal, REFERRAL_CODE, VARIATIONAL_X } from '@/lib/links';
+import { accessUrl, CEO_URL, CREATOR_X, openExternal, REFERRAL_CODE, VARIATIONAL_X } from '@/lib/links';
+import { audio } from '@/lib/audio';
+import { flashAt } from '@/lib/fx';
 import { useWorld } from '@/lib/store';
 import { FONT_BOLD, FONT_REGULAR, FONT_SEMI } from './Hall';
 import { interactiveHandlers, Kiosk } from './Kiosk';
@@ -198,6 +200,8 @@ function LinkButton({ y, label, sub, url, primary = false }: { y: number; label:
         if (e.delta > 6) return;
         const { nearbyId, showToast, lang, activeId } = useWorld.getState();
         if (activeId) return;
+        audio.click();
+        flashAt([e.point.x, e.point.y, e.point.z], primary ? '#4C9AF8' : '#ffffff');
         if (nearbyId === 'twitter') openExternal(url);
         else showToast(t('tooFar', lang));
       }}
@@ -227,26 +231,38 @@ function LinkButton({ y, label, sub, url, primary = false }: { y: number; label:
 function SocialTotem({ position }: { position: [number, number, number] }) {
   return (
     <group position={position} rotation={[0, Math.PI, 0]}>
-      <mesh position={[0, 1.75, 0]} castShadow receiveShadow>
-        <boxGeometry args={[1.9, 3.5, 0.14]} />
+      <mesh position={[0, 2.2, 0]} castShadow receiveShadow>
+        <boxGeometry args={[1.9, 4.4, 0.14]} />
         <meshStandardMaterial color={BRAND.dark} roughness={0.5} />
       </mesh>
       <mesh position={[0, 0.06, 0]}>
         <boxGeometry args={[2.1, 0.12, 0.6]} />
         <meshStandardMaterial color="#cbd5e1" metalness={0.5} roughness={0.3} />
       </mesh>
-      <LogoPlane variant="onDark" width={1.5} position={[0, 3.15, 0.075]} />
-      <Text font={FONT_BOLD} position={[0, 2.78, 0.075]} fontSize={0.15} letterSpacing={0.15} color="#9cc8fb" anchorX="center" anchorY="middle">
+      <LogoPlane variant="onDark" width={1.5} position={[0, 4.05, 0.075]} />
+      <Text font={FONT_BOLD} position={[0, 3.68, 0.075]} fontSize={0.15} letterSpacing={0.15} color="#9cc8fb" anchorX="center" anchorY="middle">
         FOLLOW & ACCESS
       </Text>
-      <LinkButton y={2.3} label="Lucas Schuermann · CEO" sub={CEO_URL.url.replace(/^https?:\/\//, '').replace(/\/$/, '')} url={CEO_URL.url} />
-      <LinkButton y={1.7} label={`X ${VARIATIONAL_X.label}`} sub="Official account" url={VARIATIONAL_X.url} />
-      <LinkButton y={1.1} label="Trade on Omni →" sub={REFERRAL_CODE ? `ref: ${REFERRAL_CODE}` : 'omni.variational.io'} url={accessUrl()} primary />
-      <Text font={FONT_REGULAR} position={[0, 0.55, 0.075]} fontSize={0.07} color="#9fb6d6" anchorX="center" anchorY="middle" maxWidth={1.7} textAlign="center">
+      <LinkButton y={3.2} label="Lucas Schuermann · CEO" sub={CEO_URL.url.replace(/^https?:\/\//, '').replace(/\/$/, '')} url={CEO_URL.url} />
+      <LinkButton y={2.62} label={`X ${VARIATIONAL_X.label}`} sub="Official account" url={VARIATIONAL_X.url} />
+      <LinkButton y={2.04} label="Trade on Omni →" sub={REFERRAL_CODE ? `ref: ${REFERRAL_CODE}` : 'omni.variational.io'} url={accessUrl()} primary />
+      {/* Section créateur du Summit */}
+      <mesh position={[0, 1.62, 0.075]}>
+        <planeGeometry args={[1.5, 0.008]} />
+        <meshBasicMaterial color="#35507a" />
+      </mesh>
+      <Text font={FONT_BOLD} position={[0, 1.45, 0.075]} fontSize={0.085} letterSpacing={0.18} color="#9cc8fb" anchorX="center" anchorY="middle">
+        SUMMIT CREATOR
+      </Text>
+      <LinkButton y={1.08} label={`X ${CREATOR_X.label}`} sub="DMs open" url={CREATOR_X.url} />
+      <Text font={FONT_REGULAR} position={[0, 0.62, 0.075]} fontSize={0.068} lineHeight={1.3} color="#cbd5e1" anchorX="center" anchorY="middle" maxWidth={1.65} textAlign="center">
+        Curious about this summit or the ecosystem? My DMs are open.
+      </Text>
+      <Text font={FONT_REGULAR} position={[0, 0.3, 0.075]} fontSize={0.058} color="#7f93b0" anchorX="center" anchorY="middle" maxWidth={1.7} textAlign="center">
         Click when near the wall · Not financial advice
       </Text>
       <RigidBody type="fixed" colliders={false}>
-        <CuboidCollider args={[1.05, 1.75, 0.3]} position={[0, 1.75, 0]} />
+        <CuboidCollider args={[1.05, 2.2, 0.3]} position={[0, 2.2, 0]} />
       </RigidBody>
     </group>
   );

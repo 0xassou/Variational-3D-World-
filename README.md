@@ -8,6 +8,8 @@ Une salle claire et corporate, avec :
 - un **parcours de visite** : les stands produits (01 Moteur RFQ, 02 Omni & 0 % fees, 03 Pro OTC, 05 Variational Swaps) longent l'allée depuis l'entrée ; au fond, de part et d'autre de l'estrade, la visite se termine par 04 Tokenomics $VAR et 06 Avenir & Vision ;
 - un stand central **Live Metrics & Volume** : chiffres officiels d'octobre 2026, données en direct, tour à 4 écrans, anneau-ticker et sculptures 3D de données ;
 - des cristaux verts « Plumbob » (façon Les Sims) au-dessus de chaque borne interactive ;
+- une musique d'ambiance synthwave douce, générée en direct avec la Web Audio API (aucun fichier audio), avec un bouton Son ON/OFF en haut de l'écran (préférence mémorisée) ;
+- un petit « pop » sonore et un flash lumineux à chaque clic : flash 3D sur les bornes, les stands et les boutons du totem, halo sur les boutons de l'interface ;
 - une ambiance gris-bleu mat (murs, sol, plafond) qui fait ressortir les stands et les éclairages ;
 - un espace networking meublé : salons avec canapés et fauteuils, mange-debout, tables hautes avec tabourets, totems et kakemonos de marque, bacs végétalisés et plantes ;
 - un plafond habillé : poutres, ponts lumineux avec projecteurs, halo suspendu, enseignes circulaires au-dessus des stands, suspensions chaleureuses ;
@@ -64,7 +66,8 @@ components/
     brandTextures.ts    Dessin du logo officiel sur canvas (Path2D) : t-shirts, bornes, kakemonos, totems
     Crowd.tsx           Public assis et PNJ debout (InstancedMesh) ; environ 1 PNJ sur 100 animé
     people.tsx          Modèle de personnage low-poly partagé et texture du logo
-    Kiosk.tsx           Borne interactive (anneau de proximité, marqueur, clic)
+    Kiosk.tsx           Borne interactive (anneau de proximité, cristal Plumbob, clic)
+    ClickFlash.tsx      Flash lumineux 3D (halo, onde, lumière) au point cliqué
     MetricsStand.tsx    Stand central Live Metrics (écrans canvas live, ticker, barres 3D, anneau RWA)
     metricsTextures.ts  Dessin des écrans du stand Metrics
     CeilingDecor.tsx    Poutres, ponts lumineux, halo, enseignes suspendues, suspensions
@@ -77,7 +80,7 @@ components/
     StandWidgets.tsx    Chiffres officiels, répartition $VAR, simulateur FDV, swaps en direct, roadmap
     MetricsDashboard.tsx Tableau de bord SVG : KPI, historique OI, top marchés, part RWA
     LanguageSwitcher.tsx  Sélecteur FR / EN / KO
-    HUD.tsx             Écran d'accueil, invite d'interaction, toasts, aide
+    HUD.tsx             Écran d'accueil, bouton Son ON/OFF, invite d'interaction, toasts, aide
     VariationalLogo.tsx Logo officiel en SVG inline pour l'interface 2D
 lib/
   content.ts            Bloc 5 : contenu multilingue par stand, tiré de la page Notion
@@ -88,7 +91,9 @@ lib/
   metricsSnapshot.ts    Instantané daté utilisé hors ligne / avant le premier chargement
   visuals.ts            Chiffres clés affichés en tête de chaque stand
   officialMetrics.ts    Chiffres officiels d'octobre 2026, répartition $VAR, barème FDV
-  links.ts              Liens sociaux et lien d'accès / d'affiliation à Omni
+  links.ts              Liens sociaux (CEO, @variational_io, créateur @0x_assou) et lien d'accès / d'affiliation à Omni
+  audio.ts              Musique d'ambiance procédurale et effet sonore de clic (Web Audio API)
+  fx.ts                 Bus d'événements des flashs de clic
   store.ts              État global (Zustand) et position du joueur
 public/fonts/           Police Inter (OFL), utilisée par les textes 3D
 ```
@@ -123,6 +128,7 @@ Ils se configurent dans `lib/links.ts` :
 
 - `VARIATIONAL_X` : le compte officiel `@variational_io`, celui que lie variational.io.
 - `CEO_URL` : aucun compte X personnel de Lucas Schuermann n'est lié depuis ses pages officielles. Le lien pointe donc par défaut vers son site, lucasschuermann.com. Remplace-le par l'URL de son compte X une fois que tu l'as vérifiée.
+- `CREATOR_X` : le compte du créateur du Summit (`@0x_assou`). Il apparaît sur le totem « Follow & Access » et dans le pop-up du Twitter Alpha Wall, avec un message d'invitation aux DMs.
 - `REFERRAL_CODE` : ton code de parrainage Omni. Une fois renseigné, le bouton « Accéder à Omni » devient un lien d'affiliation (`?ref=CODE`).
 
 ## Contenu

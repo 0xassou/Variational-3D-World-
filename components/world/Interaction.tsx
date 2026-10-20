@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { InteractiveId } from '@/lib/content';
 import { INTERACTIVE_POINTS } from '@/lib/layout';
+import { audio } from '@/lib/audio';
+import { FLASH_LEAD_MS, flashAt } from '@/lib/fx';
 import { playerState, useWorld } from '@/lib/store';
 
 /**
@@ -31,7 +33,17 @@ export function Interaction() {
       if (e.code === 'Escape' && activeId) {
         close();
       } else if (e.code === 'KeyE' && started && !activeId && nearbyId) {
-        open(nearbyId);
+        // Flash sur la borne la plus proche portant cet identifiant.
+        const p = playerState.position;
+        const kiosk = INTERACTIVE_POINTS.filter((pt) => pt.id === nearbyId).sort(
+          (a, b) => Math.hypot(p.x - a.x, p.z - a.z) - Math.hypot(p.x - b.x, p.z - b.z),
+        )[0];
+        audio.click();
+        if (kiosk) flashAt([kiosk.x, 1.5, kiosk.z]);
+        const id = nearbyId;
+        setTimeout(() => {
+          if (!useWorld.getState().activeId) open(id);
+        }, FLASH_LEAD_MS);
       }
     };
     window.addEventListener('keydown', onKey);
