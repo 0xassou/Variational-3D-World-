@@ -8,6 +8,7 @@ import { HALF_D, HALF_W, HALL, SPAWN } from '@/lib/layout';
 import { playerState, useWorld } from '@/lib/store';
 import { Avatar, type AvatarMotion } from './Avatar';
 import { useMoveKeys } from './useKeyboard';
+import { useTouchJoystick } from './useTouchJoystick';
 
 const WALK_SPEED = 4.2;
 const RUN_SPEED = 7.5;
@@ -30,12 +31,16 @@ const move = new Vector3();
 const target = new Vector3();
 const desiredCam = new Vector3();
 
-/** Orbite caméra pilotée au clic-glisser + molette (pas de pointer lock, l'UI reste cliquable). */
-function useOrbitInput() {
+/**
+ * Orbite caméra pilotée au clic-glisser + molette (pas de pointer lock, l'UI reste cliquable).
+ * Au tactile, le premier doigt est réservé au joystick : seul un second doigt tourne la caméra.
+ */
+function useOrbitInput(joystickPointer: { current: number | null }) {
   const orbit = useRef({ yaw: 0, pitch: 0.38, distance: 7.5 });
 
   useEffect(() => {
     let dragging = false;
+    let dragPointer = -1;
     let lastX = 0;
     let lastY = 0;
 
@@ -43,12 +48,14 @@ function useOrbitInput() {
 
     const onDown = (e: PointerEvent) => {
       if (e.button !== 0 || !inWorld(e) || useWorld.getState().activeId) return;
+      if (e.pointerType === 'touch' && (joystickPointer.current === null || joystickPointer.current === e.pointerId)) return;
       dragging = true;
+      dragPointer = e.pointerId;
       lastX = e.clientX;
       lastY = e.clientY;
     };
     const onMove = (e: PointerEvent) => {
-      if (!dragging) return;
+      if (!dragging || e.pointerId !== dragPointer) return;
       const dx = e.clientX - lastX;
       const dy = e.clientY - lastY;
       lastX = e.clientX;
@@ -56,8 +63,8 @@ function useOrbitInput() {
       orbit.current.yaw -= dx * 0.005;
       orbit.current.pitch = MathUtils.clamp(orbit.current.pitch + dy * 0.004, PITCH_MIN, PITCH_MAX);
     };
-    const onUp = () => {
-      dragging = false;
+    const onUp = (e: PointerEvent) => {
+      if (e.pointerId === dragPointer) dragging = false;
     };
     const onWheel = (e: WheelEvent) => {
       if (!inWorld(e) || useWorld.getState().activeId) return;
@@ -76,7 +83,7 @@ function useOrbitInput() {
       window.removeEventListener('pointercancel', onUp);
       window.removeEventListener('wheel', onWheel);
     };
-  }, []);
+  }, [joystickPointer]);
 
   return orbit;
 }
@@ -86,7 +93,8 @@ export function Player() {
   const avatar = useRef<Group>(null);
   const motion = useRef<AvatarMotion>({ speed: 0 });
   const keys = useMoveKeys();
-  const orbit = useOrbitInput();
+  const touch = useTouchJoystick();
+  const orbit = useOrbitInput(touch.pointerId);
   const camera = useThree((s) => s.camera);
 
   // Caméra initiale derrière le joueur.
@@ -114,7 +122,13 @@ export function Player() {
       if (k.right) move.add(right);
       if (k.left) move.sub(right);
     }
-    const speed = k.run ? RUN_SPEED : WALK_SPEED;
+    let speed = k.run ? RUN_SPEED : WALK_SPEED;
+    const stick = touch.stick.current;
+    if (canMove && stick.active && move.lengthSq() === 0) {
+      // Joystick tactile : vitesse proportionnelle à l'amplitude, course en glissant loin.
+      move.addScaledVector(forward, stick.y).addScaledVector(right, stick.x);
+      speed = stick.strength > 1.5 ? RUN_SPEED : WALK_SPEED * Math.min(1, Math.max(0.35, stick.strength));
+    }
     if (move.lengthSq() > 0) move.normalize().multiplyScalar(speed);
 
     // Accélération lissée, vitesse verticale conservée (gravité gérée par Rapier).

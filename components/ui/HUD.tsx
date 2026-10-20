@@ -52,6 +52,7 @@ function Intro() {
           <li>🏃 {t('controlsRun', lang)}</li>
           <li>🖱️ {t('controlsCamera', lang)}</li>
           <li>💬 {t('controlsInteract', lang)}</li>
+          <li>📱 {t('controlsTouch', lang)}</li>
         </ul>
         <button
           type="button"
@@ -129,6 +130,7 @@ function ControlsHelp() {
           <li>{t('controlsRun', lang)}</li>
           <li>{t('controlsCamera', lang)}</li>
           <li>{t('controlsInteract', lang)}</li>
+          <li>{t('controlsTouch', lang)}</li>
         </ul>
       )}
     </div>
