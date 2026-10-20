@@ -2,11 +2,11 @@
 
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { Html, Text } from '@react-three/drei';
+import { Text } from '@react-three/drei';
 import { CuboidCollider, RigidBody } from '@react-three/rapier';
 import { CanvasTexture, SRGBColorSpace } from 'three';
 import { BRAND_BLUE } from '@/lib/brand';
-import { CONTENT, VIDEOS, youtubeEmbedUrl } from '@/lib/content';
+import { CONTENT, VIDEOS, type VideoClip } from '@/lib/content';
 import { BRAND, interactivePoint, STAGE } from '@/lib/layout';
 import { useWorld } from '@/lib/store';
 import { drawEmblem, drawLogo, wrapText } from './brandTextures';
@@ -14,12 +14,6 @@ import { FONT_BOLD, FONT_REGULAR, FONT_SEMI } from './Hall';
 import { Kiosk } from './Kiosk';
 import { LogoPlane } from './Logo';
 import { Person, type PersonSpec } from './people';
-
-/** Résolution CSS de l'iframe ; convertie en unités 3D via `distanceFactor`. */
-const SCREEN_PX_W = 1280;
-const SCREEN_PX_H = 720;
-// En mode `transform`, drei applique 1 px CSS = distanceFactor / 400 unités.
-const SCREEN_DISTANCE_FACTOR = (STAGE.screenWidth * 400) / SCREEN_PX_W;
 
 const TOP = STAGE.height;
 const FRONT_Z = STAGE.z + STAGE.depth / 2;
@@ -49,14 +43,22 @@ interface LoadedPhoto {
   credit: string;
 }
 
-function drawCover(ctx: CanvasRenderingContext2D, img: HTMLImageElement, x: number, y: number, w: number, h: number) {
-  // Recadrage « cover » ancré à droite (le visage est sur la droite des miniatures).
+function drawCover(
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  anchor: 'right' | 'center' = 'right',
+) {
+  // Recadrage « cover », ancré à droite par défaut (le visage est sur la droite des miniatures).
   const iw = img.naturalWidth;
   const ih = img.naturalHeight;
   const scale = Math.max(w / iw, h / ih);
   const sw = w / scale;
   const sh = h / scale;
-  const sx = Math.max(0, iw - sw);
+  const sx = anchor === 'right' ? Math.max(0, iw - sw) : (iw - sw) / 2;
   const sy = (ih - sh) / 2;
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
 }
@@ -272,6 +274,125 @@ function SummitBanner() {
 }
 
 /* ------------------------------------------------------------------ */
+/* Écran « en direct » pendant la diffusion d'une vidéo                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * La vidéo elle-même est lue dans le lecteur 2D (StagePlayer) : un iframe YouTube intégré à la
+ * scène 3D reste noir sur une partie des navigateurs. L'écran montre la vignette officielle
+ * de la vidéo, un bandeau LIVE animé et le titre.
+ */
+function drawNowPlaying(ctx: CanvasRenderingContext2D, time: number, clip: VideoClip, thumb: HTMLImageElement | null) {
+  const W = BANNER_W;
+  const H = BANNER_H;
+  ctx.fillStyle = '#0b1f3a';
+  ctx.fillRect(0, 0, W, H);
+  if (thumb) {
+    // Léger zoom lent façon « Ken Burns » pour que l'écran vive.
+    const zoom = 1.04 + Math.sin(time * 0.15) * 0.04;
+    const zw = W * zoom;
+    const zh = H * zoom;
+    drawCover(ctx, thumb, (W - zw) / 2, (H - zh) / 2, zw, zh, 'center');
+  } else {
+    drawEmblem(ctx, W / 2 - 260, H / 2 - 300, 520, BRAND_BLUE);
+  }
+
+  // Dégradé bas pour la lisibilité du titre.
+  const fade = ctx.createLinearGradient(0, H * 0.45, 0, H);
+  fade.addColorStop(0, 'rgba(11,31,58,0)');
+  fade.addColorStop(1, 'rgba(11,31,58,0.95)');
+  ctx.fillStyle = fade;
+  ctx.fillRect(0, 0, W, H);
+
+  // Pastille LIVE.
+  const pulse = 0.5 + 0.5 * Math.sin(time * 4);
+  ctx.fillStyle = 'rgba(11,31,58,0.8)';
+  roundRect(ctx, 60, 60, 420, 84, 42);
+  ctx.fill();
+  ctx.fillStyle = `rgba(239, 68, 68, ${0.55 + pulse * 0.45})`;
+  ctx.beginPath();
+  ctx.arc(110, 102, 15 + pulse * 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 38px Inter, Arial, sans-serif';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('LIVE · ON STAGE', 148, 104);
+  ctx.textBaseline = 'alphabetic';
+  drawLogo(ctx, W - 520, 70, 64, { emblem: BRAND_BLUE, text: '#ffffff' });
+
+  // Égaliseur animé.
+  const barsX = 80;
+  for (let i = 0; i < 5; i++) {
+    const h = 30 + (0.5 + 0.5 * Math.sin(time * 6 + i * 1.3)) * 60;
+    ctx.fillStyle = BRAND_BLUE;
+    roundRect(ctx, barsX + i * 26, 830 - h, 16, h, 8);
+    ctx.fill();
+  }
+
+  ctx.fillStyle = '#9cc8fb';
+  ctx.font = '700 40px Inter, Arial, sans-serif';
+  ctx.fillText(clip.show.toUpperCase(), barsX + 160, 826);
+  ctx.fillStyle = '#ffffff';
+  ctx.font = '800 64px Inter, Arial, sans-serif';
+  ctx.textBaseline = 'top';
+  wrapText(ctx, clip.title.en, barsX, 870, W - 160, 76, 2);
+  ctx.textBaseline = 'alphabetic';
+}
+
+function NowPlaying({ clip }: { clip: VideoClip }) {
+  const { texture, ctx } = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = BANNER_W;
+    canvas.height = BANNER_H;
+    const tex = new CanvasTexture(canvas);
+    tex.colorSpace = SRGBColorSpace;
+    tex.anisotropy = 8;
+    return { texture: tex, ctx: canvas.getContext('2d') };
+  }, []);
+  const lastDraw = useRef(-1);
+  const thumb = useRef<HTMLImageElement | null>(null);
+
+  useEffect(() => () => texture.dispose(), [texture]);
+
+  // Vignette officielle (CORS) ; maxresdefault n'existe pas toujours, d'où le repli sur hqdefault.
+  useEffect(() => {
+    let cancelled = false;
+    const load = (quality: string, fallback?: string) => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        // YouTube renvoie une image grise 120 px quand la résolution demandée n'existe pas.
+        if (img.naturalWidth <= 120 && fallback) load(fallback);
+        else if (!cancelled) thumb.current = img;
+      };
+      img.onerror = () => {
+        if (fallback) load(fallback);
+      };
+      img.src = `https://i.ytimg.com/vi/${clip.youtubeId}/${quality}.jpg`;
+    };
+    load('maxresdefault', 'hqdefault');
+    return () => {
+      cancelled = true;
+    };
+  }, [clip.youtubeId]);
+
+  useFrame(({ clock }) => {
+    const t = clock.elapsedTime;
+    if (!ctx || t - lastDraw.current < 0.1) return;
+    lastDraw.current = t;
+    drawNowPlaying(ctx, t, clip, thumb.current);
+    texture.needsUpdate = true;
+  });
+
+  return (
+    <mesh position={[0, 0, 0.01]}>
+      <planeGeometry args={[STAGE.screenWidth, STAGE.screenHeight]} />
+      <meshBasicMaterial map={texture} toneMapped={false} />
+    </mesh>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 
 function StageScreen() {
   const videoId = useWorld((s) => s.stageVideoId);
@@ -285,28 +406,7 @@ function StageScreen() {
         <boxGeometry args={[STAGE.screenWidth + 0.5, STAGE.screenHeight + 0.5, 0.18]} />
         <meshStandardMaterial color="#111827" roughness={0.4} metalness={0.3} />
       </mesh>
-      {clip ? (
-        <Html
-          transform
-          occlude="blending"
-          distanceFactor={SCREEN_DISTANCE_FACTOR}
-          zIndexRange={[20, 0]}
-          position={[0, 0, 0.01]}
-          style={{ width: SCREEN_PX_W, height: SCREEN_PX_H, background: '#000' }}
-        >
-          <iframe
-            key={clip.id}
-            title={clip.title.en}
-            width={SCREEN_PX_W}
-            height={SCREEN_PX_H}
-            src={youtubeEmbedUrl(clip, { autoplay: true, mute: true })}
-            allow="autoplay; encrypted-media; picture-in-picture"
-            style={{ border: 0, display: 'block' }}
-          />
-        </Html>
-      ) : (
-        <SummitBanner />
-      )}
+      {clip ? <NowPlaying key={clip.id} clip={clip} /> : <SummitBanner />}
       <Text
         font={FONT_SEMI}
         position={[0, -STAGE.screenHeight / 2 - 0.65, -0.02]}

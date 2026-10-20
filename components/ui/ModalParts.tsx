@@ -221,6 +221,7 @@ export function VideoItem({ clip, lang }: { clip: VideoClip; lang: Lang }) {
   const [inline, setInline] = useState(false);
   const stageVideoId = useWorld((s) => s.stageVideoId);
   const setStageVideo = useWorld((s) => s.setStageVideo);
+  const close = useWorld((s) => s.close);
   const onScreen = stageVideoId === clip.id;
   const range = clip.start !== undefined ? `${formatTime(clip.start)} → ${formatTime(clip.end)}` : '';
 
@@ -243,7 +244,11 @@ export function VideoItem({ clip, lang }: { clip: VideoClip; lang: Lang }) {
           <p className="mt-0.5 font-semibold text-slate-800">{clip.title[lang]}</p>
           <p className="mt-0.5 text-xs text-slate-500">{clip.note[lang]}</p>
           <div className="mt-2 flex flex-wrap gap-2">
-            {onScreen ? (
+            {clip.embeddable === false ? (
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-600">
+                {t('youtubeOnly', lang)}
+              </span>
+            ) : onScreen ? (
               <button
                 type="button"
                 onClick={() => setStageVideo(null)}
@@ -255,21 +260,27 @@ export function VideoItem({ clip, lang }: { clip: VideoClip; lang: Lang }) {
             ) : (
               <button
                 type="button"
-                onClick={() => setStageVideo(clip.id)}
+                onClick={() => {
+                  // Ferme le pop-up pour voir la scène et le lecteur.
+                  setStageVideo(clip.id);
+                  close();
+                }}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-brand-600"
               >
                 <MonitorPlay className="h-3.5 w-3.5" aria-hidden />
                 {t('playOnScreen', lang)}
               </button>
             )}
-            <button
-              type="button"
-              onClick={() => setInline((v) => !v)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
-            >
-              <CirclePlay className="h-3.5 w-3.5" aria-hidden />
-              {inline ? t('hideVideo', lang) : t('watchHere', lang)}
-            </button>
+            {clip.embeddable !== false && (
+              <button
+                type="button"
+                onClick={() => setInline((v) => !v)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+              >
+                <CirclePlay className="h-3.5 w-3.5" aria-hidden />
+                {inline ? t('hideVideo', lang) : t('watchHere', lang)}
+              </button>
+            )}
             <a
               href={youtubeWatchUrl(clip)}
               target="_blank"

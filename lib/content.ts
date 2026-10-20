@@ -35,6 +35,8 @@ export interface VideoClip {
   show: string;
   title: Localized;
   note: Localized;
+  /** false = l'auteur interdit la lecture hors de YouTube (lien externe uniquement). */
+  embeddable?: false;
 }
 
 export interface SourceLink {
@@ -117,6 +119,7 @@ export const VIDEOS: Record<string, VideoClip> = {
   'castle-rfq-clob': {
     id: 'castle-rfq-clob',
     youtubeId: 'tucl1jCTy6E',
+    embeddable: false,
     show: 'Castle Labs',
     title: {
       fr: 'RFQ vs CLOB (vidéo complète)',
