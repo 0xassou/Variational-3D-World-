@@ -282,7 +282,7 @@ const Q_SINGLE_FILL: Quote = {
 /* Space X officiel de Variational, 20 oct. 2026 (Lucas Schuermann, interviewé par Andy de The Rollup). */
 const SPACE_SOURCE: SourceLink = {
   label: 'Space X Variational × The Rollup — 20 Oct 2026 (Lucas Schuermann)',
-  url: 'https://x.com/variational_io',
+  url: 'https://x.com/variational_io/status/2112513867817386052',
 };
 const SPACE_CONTEXT = 'Space X Variational × The Rollup, 20 Oct 2026';
 
